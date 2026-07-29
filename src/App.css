@@ -1,0 +1,17 @@
+.card {
+  padding: 20px;
+}
+
+.card div {
+  margin-bottom: 15px;
+}
+
+.card label {
+  display: inline-block;
+  width: 80px;
+}
+
+.card input {
+  width: 200px;
+  padding: 8px;
+}
