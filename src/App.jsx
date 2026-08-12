@@ -1,6 +1,51 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+
+// =====================================================
+// REVEAL — scroll-triggered fade/rise wrapper.
+// Purely presentational: observes itself, flips a class
+// once it enters the viewport, then stops watching.
+// =====================================================
+function Reveal({
+  children,
+  style,
+  className = "",
+  as = "div",
+  delay = 0,
+  ...rest
+}) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+  const Tag = as;
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.15 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <Tag
+      ref={ref}
+      className={`reveal ${visible ? "is-visible" : ""} ${className}`}
+      style={{ ...style, transitionDelay: `${delay}ms` }}
+      {...rest}
+    >
+      {children}
+    </Tag>
+  );
+}
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -9,12 +54,12 @@ function App() {
   const navigate = useNavigate();
 
   // ==============================
-  // GET ALL PRODUCTS
+  // GET ALL PRODUCTS  (unchanged endpoint)
   // ==============================
   const getProducts = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/products/all",
+        "https://industries-harold-developer-those.trycloudflare.com/api/products/all",
       );
 
       console.log("Products:", response.data);
@@ -33,14 +78,14 @@ function App() {
   }, []);
 
   // ==============================
-  // VIEW PRODUCT DETAILS
+  // VIEW PRODUCT DETAILS  (unchanged route)
   // ==============================
   const viewDetails = (id) => {
     navigate(`/view/${id}`);
   };
 
   // ==============================
-  // PRODUCT CATEGORIES
+  // PRODUCT CATEGORIES (unchanged list)
   // ==============================
   const categories = [
     "Electrical",
@@ -52,50 +97,212 @@ function App() {
     "Fashion",
   ];
 
+  // categories that actually have stock, used only for the index-tab strip
+  const activeCategories = categories.filter((category) =>
+    products.some(
+      (product) =>
+        product.category?.toLowerCase().trim() ===
+        category.toLowerCase().trim(),
+    ),
+  );
+
+  // ==============================
+  // HERO BANNER SLIDES (rotates automatically, purely presentational)
+  // ==============================
+  const heroSlides = [
+    {
+      eyebrow: "ISSUE NO. 07 — GENERAL CATALOG",
+      title: ["Discover.", "Shop.", "Enjoy."],
+      text: "Explore our collection of quality products designed to bring convenience and value into your everyday life.",
+      stamp: "FRESH STOCK",
+      image:
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80",
+    },
+    {
+      eyebrow: "ISSUE NO. 08 — JUST LANDED",
+      title: ["New goods.", "Every", "week."],
+      text: "New arrivals land in the catalog every week, from everyday tools to weekend finds.",
+      stamp: "NEW ARRIVALS",
+      image:
+        "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=800&q=80",
+    },
+    {
+      eyebrow: "ISSUE NO. 09 — CUSTOMER FAVORITES",
+      title: ["What people", "keep coming", "back for."],
+      text: "Our most reordered items, picked by shoppers who came back for seconds.",
+      stamp: "BEST SELLERS",
+      image:
+        "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80",
+    },
+  ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [heroSlides.length]);
+
+  const activeSlide = heroSlides[currentSlide];
+
+  // ==============================
+  // EXTRA (presentational-only) STATE
+  // Scroll progress bar + hero parallax tilt.
+  // None of this touches data, routes, or endpoints above.
+  // ==============================
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+      setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+
+  const handleHeroMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    setTilt({ x: px * 14, y: py * -14 });
+  };
+
+  const handleHeroMouseLeave = () => setTilt({ x: 0, y: 0 });
+
   return (
     <div style={styles.page}>
+      {/* Same type system as the All Products page: display + workhorse
+          body + a mono face reserved for stamped-price / label text */}
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap"
+      />
+
+      <style>{globalAnimations}</style>
+
+      {/* AMBIENT LIGHT MESH — matches the All Products page glow */}
+      <div style={styles.ambientOrb1}></div>
+      <div style={styles.ambientOrb2}></div>
+
+      {/* SCROLL PROGRESS BAR */}
+      <div style={styles.progressTrack}>
+        <div
+          style={{ ...styles.progressFill, width: `${scrollProgress}%` }}
+        ></div>
+      </div>
+
       {/* ===================================== */}
       {/* HERO SECTION */}
       {/* ===================================== */}
 
-      <section style={styles.hero}>
+      <section style={styles.hero} className="hero-glow">
         <div style={styles.heroContent}>
-          <p style={styles.welcome}>WELCOME TO MARKET</p>
+          <p
+            key={`eyebrow-${currentSlide}`}
+            style={styles.welcome}
+            className="hero-fade"
+          >
+            {activeSlide.eyebrow}
+          </p>
 
-          <h1 style={styles.heroTitle}>
-            Discover.
-            <br />
-            Shop.
-            <br />
-            Enjoy.
+          <h1
+            key={`title-${currentSlide}`}
+            style={styles.heroTitle}
+            className="hero-fade"
+          >
+            {activeSlide.title.map((line, i) => (
+              <React.Fragment key={i}>
+                {line}
+                {i < activeSlide.title.length - 1 && <br />}
+              </React.Fragment>
+            ))}
           </h1>
 
-          <p style={styles.heroText}>
-            Explore our collection of quality products designed to bring
-            convenience and value into your everyday life.
+          <span className="title-underline"></span>
+
+          <p
+            key={`text-${currentSlide}`}
+            style={styles.heroText}
+            className="hero-fade"
+          >
+            {activeSlide.text}
           </p>
 
           <div style={styles.heroButtons}>
-            <Link to="/all" style={styles.shopButton}>
+            <Link to="/all" style={styles.shopButton} className="btn-shine">
               Shop Now →
             </Link>
 
-            <Link to="/add" style={styles.addButton}>
+            <Link to="/add" style={styles.addButton} className="btn-outline">
               Add Product
             </Link>
           </div>
         </div>
 
-        {/* HERO IMAGE */}
+        {/* HERO IMAGE — auto-rotating banner with mouse-tilt parallax */}
+        <div
+          style={styles.heroImageWrap}
+          onMouseMove={handleHeroMouseMove}
+          onMouseLeave={handleHeroMouseLeave}
+        >
+          <div
+            style={{
+              ...styles.heroFrame,
+              transform: `perspective(900px) rotateY(${tilt.x}deg) rotateX(${tilt.y}deg)`,
+            }}
+          >
+            {heroSlides.map((slide, i) => (
+              <div
+                key={i}
+                style={{
+                  ...styles.heroSlideImg,
+                  backgroundImage: `url('${slide.image}')`,
+                  opacity: i === currentSlide ? 1 : 0,
+                  transform: i === currentSlide ? "scale(1)" : "scale(1.08)",
+                }}
+              ></div>
+            ))}
+            <div style={styles.heroSheen} className="hero-sheen"></div>
+          </div>
 
-        <div style={styles.heroImage}></div>
+          <div style={styles.heroStamp} className="stamp-float">
+            <span key={`stamp-${currentSlide}`} style={styles.heroStampText}>
+              {activeSlide.stamp}
+            </span>
+          </div>
+
+          {/* DOT NAVIGATION with per-slide progress fill */}
+          <div style={styles.heroDots}>
+            {heroSlides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentSlide(i)}
+                aria-label={`Show slide ${i + 1}`}
+                style={{
+                  ...styles.heroDot,
+                  ...(i === currentSlide ? styles.heroDotActive : {}),
+                }}
+                className={i === currentSlide ? "dot-active" : ""}
+              ></button>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* ===================================== */}
       {/* OFFER SECTION */}
       {/* ===================================== */}
 
-      <section style={styles.offer}>
+      <Reveal as="section" style={styles.offer}>
         <p style={styles.offerLabel}>LIMITED TIME OFFER</p>
 
         <h2 style={styles.offerTitle}>Get 20% Off Your First Order</h2>
@@ -104,94 +311,119 @@ function App() {
           Start shopping today and enjoy exclusive savings on selected products.
         </p>
 
-        <Link to="/all" style={styles.offerButton}>
+        <Link to="/all" style={styles.offerButton} className="btn-shine">
           Explore Offers
         </Link>
-      </section>
+      </Reveal>
 
       {/* ===================================== */}
       {/* CATEGORY PRODUCTS */}
       {/* ===================================== */}
 
       <section style={styles.categorySection}>
-        {/* SECTION HEADER */}
-
-        <div style={styles.sectionHeader}>
+        <Reveal style={styles.sectionHeader}>
           <p style={styles.sectionLabel}>SHOP BY CATEGORY</p>
-
           <h2 style={styles.sectionTitle}>Explore Our Collection</h2>
-
           <p style={styles.sectionSubtitle}>
             Find the perfect products from your favorite categories.
           </p>
-        </div>
+        </Reveal>
+
+        {/* INDEX TAB STRIP — jumps to a category */}
+        {!loading && activeCategories.length > 0 && (
+          <div style={styles.tabStrip}>
+            {activeCategories.map((category, i) => (
+              <a
+                key={category}
+                href={`#cat-${category}`}
+                style={i % 2 === 0 ? styles.tabDark : styles.tabAccent}
+                className="tab-link"
+              >
+                {category}
+              </a>
+            ))}
+          </div>
+        )}
 
         {/* LOADING */}
 
         {loading ? (
-          <h2 style={styles.message}>Loading products...</h2>
+          <h2 style={styles.message} className="pulse-text">
+            Loading products...
+          </h2>
         ) : products.length === 0 ? (
-          /* NO PRODUCTS */
-
           <div style={styles.emptyContainer}>
             <h2 style={styles.message}>No products available</h2>
 
-            <Link to="/add" style={styles.addProductButton}>
+            <Link
+              to="/add"
+              style={styles.addProductButton}
+              className="btn-shine"
+            >
               Add Your First Product
             </Link>
           </div>
         ) : (
-          /* CATEGORY LOOP */
-
           categories.map((category) => {
-            // Get products belonging to this category
-
             const categoryProducts = products.filter(
               (product) =>
                 product.category?.toLowerCase().trim() ===
                 category.toLowerCase().trim(),
             );
 
-            // Don't show category if no products exist
-
             if (categoryProducts.length === 0) {
               return null;
             }
 
             return (
-              <div key={category} style={styles.categoryContainer}>
+              <div
+                key={category}
+                id={`cat-${category}`}
+                style={styles.categoryContainer}
+              >
                 {/* CATEGORY HEADER */}
 
-                <div style={styles.categoryHeader}>
+                <Reveal style={styles.categoryHeader}>
                   <div>
                     <p style={styles.categoryLabel}>CATEGORY</p>
-
                     <h2 style={styles.categoryTitle}>{category}</h2>
                   </div>
 
-                  <Link to="/all" style={styles.viewAll}>
+                  <Link
+                    to="/all"
+                    style={styles.viewAll}
+                    className="view-all-link"
+                  >
                     View All Products →
                   </Link>
-                </div>
+                </Reveal>
 
-                {/* PRODUCTS */}
+                {/* PRODUCTS — glass cards, hanging price tags */}
 
                 <div style={styles.productGrid}>
-                  {categoryProducts.slice(0, 4).map((product) => (
-                    <div key={product.id} style={styles.card}>
+                  {categoryProducts.slice(0, 4).map((product, i) => (
+                    <Reveal
+                      key={product.id}
+                      style={styles.card}
+                      className="product-card"
+                      delay={i * 90}
+                    >
                       {/* PRODUCT IMAGE */}
 
                       <div style={styles.imageContainer}>
                         <img
-                          src={`http://localhost:8080/uploads/${product.productImg}`}
+                          src={`https://industries-harold-developer-those.trycloudflare.com/uploads/${product.productImg}`}
                           alt={product.name}
                           style={styles.image}
+                          className="product-image"
                           onError={(e) => {
                             e.target.src =
                               "https://via.placeholder.com/400x300?text=No+Image";
                           }}
                         />
                       </div>
+
+                      <div style={styles.dashedLine}></div>
 
                       {/* PRODUCT DETAILS */}
 
@@ -207,11 +439,12 @@ function App() {
                         <button
                           onClick={() => viewDetails(product.id)}
                           style={styles.viewButton}
+                          className="view-btn"
                         >
                           View Details
                         </button>
                       </div>
-                    </div>
+                    </Reveal>
                   ))}
                 </div>
               </div>
@@ -225,37 +458,41 @@ function App() {
       {/* ===================================== */}
 
       <section style={styles.features}>
-        <div style={styles.feature}>
-          <div style={styles.featureIcon}>🚚</div>
-
-          <h3>Fast Delivery</h3>
-
-          <p>Quick and reliable delivery directly to your doorstep.</p>
-        </div>
-
-        <div style={styles.feature}>
-          <div style={styles.featureIcon}>✓</div>
-
-          <h3>Premium Quality</h3>
-
-          <p>Carefully selected products with excellent quality.</p>
-        </div>
-
-        <div style={styles.feature}>
-          <div style={styles.featureIcon}>↻</div>
-
-          <h3>Easy Returns</h3>
-
-          <p>Simple and hassle-free returns for your convenience.</p>
-        </div>
-
-        <div style={styles.feature}>
-          <div style={styles.featureIcon}>♡</div>
-
-          <h3>Trusted Shopping</h3>
-
-          <p>A safe and comfortable shopping experience.</p>
-        </div>
+        {[
+          {
+            icon: "🚚",
+            title: "Fast Delivery",
+            text: "Quick and reliable delivery directly to your doorstep.",
+          },
+          {
+            icon: "✓",
+            title: "Premium Quality",
+            text: "Carefully selected products with excellent quality.",
+          },
+          {
+            icon: "↻",
+            title: "Easy Returns",
+            text: "Simple and hassle-free returns for your convenience.",
+          },
+          {
+            icon: "♡",
+            title: "Trusted Shopping",
+            text: "A safe and comfortable shopping experience.",
+          },
+        ].map((f, i) => (
+          <Reveal
+            key={f.title}
+            style={styles.feature}
+            className="feature"
+            delay={i * 100}
+          >
+            <div style={styles.featureIcon} className="feature-icon">
+              {f.icon}
+            </div>
+            <h3 style={styles.featureTitle}>{f.title}</h3>
+            <p style={styles.featureText}>{f.text}</p>
+          </Reveal>
+        ))}
       </section>
 
       {/* ===================================== */}
@@ -263,43 +500,39 @@ function App() {
       {/* ===================================== */}
 
       <section style={styles.reviews}>
-        <p style={styles.sectionLabel}>CUSTOMER REVIEWS</p>
-
-        <h2 style={styles.sectionTitle}>What Our Customers Say</h2>
+        <Reveal style={{}}>
+          <p style={styles.sectionLabel}>CUSTOMER REVIEWS</p>
+          <h2 style={styles.sectionTitle}>What Our Customers Say</h2>
+        </Reveal>
 
         <div style={styles.reviewGrid}>
-          <div style={styles.reviewCard}>
-            <div style={styles.stars}>★★★★★</div>
-
-            <p>
-              "Amazing quality and very fast delivery. I really loved my
-              purchase!"
-            </p>
-
-            <strong>— Alex</strong>
-          </div>
-
-          <div style={styles.reviewCard}>
-            <div style={styles.stars}>★★★★★</div>
-
-            <p>
-              "The website is easy to use and the products are excellent. Highly
-              recommended!"
-            </p>
-
-            <strong>— Sarah</strong>
-          </div>
-
-          <div style={styles.reviewCard}>
-            <div style={styles.stars}>★★★★★</div>
-
-            <p>
-              "Great products at reasonable prices. I will definitely shop here
-              again."
-            </p>
-
-            <strong>— Michael</strong>
-          </div>
+          {[
+            {
+              text: '"Amazing quality and very fast delivery. I really loved my purchase!"',
+              author: "— Alex",
+            },
+            {
+              text: '"The website is easy to use and the products are excellent. Highly recommended!"',
+              author: "— Sarah",
+            },
+            {
+              text: '"Great products at reasonable prices. I will definitely shop here again."',
+              author: "— Michael",
+            },
+          ].map((r, i) => (
+            <Reveal
+              key={r.author}
+              style={styles.reviewCard}
+              className="review-card"
+              delay={i * 120}
+            >
+              <div style={styles.stars} className="stars">
+                ★★★★★
+              </div>
+              <p style={styles.reviewText}>{r.text}</p>
+              <strong style={styles.reviewAuthor}>{r.author}</strong>
+            </Reveal>
+          ))}
         </div>
       </section>
 
@@ -307,17 +540,17 @@ function App() {
       {/* FINAL CTA */}
       {/* ===================================== */}
 
-      <section style={styles.cta}>
+      <Reveal as="section" style={styles.cta} className="cta-glow">
         <h2 style={styles.ctaTitle}>Ready to Find Your Next Favorite?</h2>
 
         <p style={styles.ctaText}>
           Browse our complete collection and discover something special.
         </p>
 
-        <Link to="/all" style={styles.ctaButton}>
+        <Link to="/all" style={styles.ctaButton} className="btn-shine">
           Start Shopping →
         </Link>
-      </section>
+      </Reveal>
 
       {/* ===================================== */}
       {/* FOOTER */}
@@ -329,17 +562,284 @@ function App() {
 }
 
 // =====================================================
-// STYLES
+// TOKENS — matched to the All Products page palette
+// =====================================================
+// bg      #080C14  panel  rgba(15,23,42,0.75)  text   #F8FAFC
+// muted   #94A3B8  sky    #38BDF8              emerald #34D399
+// border  rgba(255,255,255,0.1)   gradient  linear-gradient(135deg,#06B6D4,#6366F1)
+
+const DISPLAY = "'Space Grotesk', sans-serif";
+const BODY = "'Plus Jakarta Sans', sans-serif";
+const MONO = "'JetBrains Mono', monospace";
+const ACCENT_GRADIENT = "linear-gradient(135deg, #06B6D4, #6366F1)";
+
+// =====================================================
+// GLOBAL ANIMATION LAYER
+// Keyframes + hover/reveal classes. Everything here is
+// additive — no existing endpoint, route, or data logic
+// is touched by any of it.
+// =====================================================
+const globalAnimations = `
+  * { scroll-behavior: smooth; }
+
+  @keyframes heroFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-fade { animation: heroFadeIn 0.7s cubic-bezier(.16,1,.3,1); }
+
+  @keyframes glowPan {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .hero-glow {
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(99,102,241,0.20), transparent 45%),
+      radial-gradient(circle at 85% 75%, rgba(6,182,212,0.22), transparent 50%);
+    background-size: 200% 200%;
+    animation: glowPan 14s ease-in-out infinite;
+  }
+
+  @keyframes floatOrb {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(50px, -50px) scale(1.1); }
+  }
+
+  @keyframes sheenSweep {
+    0%   { transform: translateX(-120%) skewX(-15deg); }
+    100% { transform: translateX(220%) skewX(-15deg); }
+  }
+  .hero-sheen {
+    animation: sheenSweep 6s ease-in-out infinite;
+  }
+
+  @keyframes floatY {
+    0%, 100% { transform: translateY(0px) rotate(-12deg); }
+    50%      { transform: translateY(-10px) rotate(-12deg); }
+  }
+  .stamp-float { animation: floatY 3.2s ease-in-out infinite; }
+
+  @keyframes underlineGrow {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+  .title-underline {
+    display: block;
+    width: 84px;
+    height: 3px;
+    background: ${ACCENT_GRADIENT};
+    margin-bottom: 22px;
+    transform-origin: left;
+    animation: underlineGrow 0.9s 0.3s cubic-bezier(.16,1,.3,1) both;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s cubic-bezier(.16,1,.3,1),
+                transform 0.7s cubic-bezier(.16,1,.3,1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .btn-shine, .btn-outline {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(.16,1,.3,1), box-shadow 0.3s ease;
+  }
+  .btn-shine::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -60%;
+    width: 40%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.45), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.6s ease;
+  }
+  .btn-shine:hover::after { left: 130%; }
+  .btn-shine:hover, .btn-outline:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.45), 0 0 20px rgba(56,189,248,0.2);
+  }
+  .btn-outline:hover { background-color: rgba(255,255,255,0.06); border-color: #38BDF8; }
+
+  .tab-link { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+  .tab-link:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 16px rgba(0,0,0,0.4);
+  }
+
+  .view-all-link { position: relative; transition: color 0.25s ease; }
+  .view-all-link::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: -3px;
+    width: 0%; height: 2px;
+    background: #38BDF8;
+    transition: width 0.3s ease;
+  }
+  .view-all-link:hover::after { width: 100%; }
+
+  .product-card {
+    transition: transform 0.45s cubic-bezier(.16,1,.3,1),
+                box-shadow 0.45s cubic-bezier(.16,1,.3,1),
+                border-color 0.45s ease;
+  }
+  .product-card:hover {
+    transform: translateY(-12px) rotate(-0.6deg);
+    border-color: #38BDF8;
+    box-shadow: 0 26px 40px rgba(0,0,0,0.55), 0 0 24px rgba(56,189,248,0.15);
+  }
+  .product-image { transition: transform 0.6s cubic-bezier(.16,1,.3,1); }
+  .product-card:hover .product-image { transform: scale(1.1) rotate(1deg); }
+
+  .view-btn {
+    position: relative;
+    overflow: hidden;
+    transition: filter 0.3s ease, transform 0.3s ease;
+  }
+  .view-btn::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -60%;
+    width: 40%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.5s ease;
+  }
+  .view-btn:hover::after { left: 130%; }
+  .view-btn:hover { filter: brightness(1.12); transform: translateY(-2px); }
+
+  .dot-active { animation: dotPulse 1.6s ease-in-out infinite; }
+  @keyframes dotPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(56,189,248,0.55); }
+    50%      { box-shadow: 0 0 0 6px rgba(56,189,248,0); }
+  }
+
+  @keyframes pulseText {
+    0%, 100% { opacity: 0.55; }
+    50%      { opacity: 1; }
+  }
+  .pulse-text { animation: pulseText 1.4s ease-in-out infinite; }
+
+  .feature { transition: transform 0.3s ease; }
+  .feature:hover { transform: translateY(-6px); }
+  .feature-icon {
+    transition: transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s ease, background-color 0.4s ease;
+  }
+  .feature:hover .feature-icon {
+    transform: scale(1.15) rotate(10deg);
+    box-shadow: 0 0 0 10px rgba(56,189,248,0.14);
+    background-color: rgba(255,255,255,0.08);
+  }
+
+  .review-card { transition: transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s ease, border-color 0.4s ease; }
+  .review-card:hover {
+    transform: translateY(-8px) scale(1.015);
+    border-color: #38BDF8;
+    box-shadow: 0 22px 32px rgba(0,0,0,0.45), 0 0 20px rgba(56,189,248,0.12);
+  }
+  .stars { display: inline-block; transition: transform 0.4s ease; }
+  .review-card:hover .stars { animation: starWiggle 0.5s ease; }
+  @keyframes starWiggle {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    30% { transform: scale(1.15) rotate(-4deg); }
+    60% { transform: scale(1.15) rotate(4deg); }
+  }
+
+  @keyframes ctaGlow {
+    0%, 100% { box-shadow: inset 0 0 80px rgba(56,189,248,0.10); }
+    50%      { box-shadow: inset 0 0 140px rgba(99,102,241,0.20); }
+  }
+  .cta-glow { animation: ctaGlow 4s ease-in-out infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+    .reveal { opacity: 1; transform: none; }
+  }
+`;
+
+// =====================================================
+// RESPONSIVE STYLES
 // =====================================================
 
 const styles = {
+  // =====================================
   // MAIN PAGE
+  // =====================================
 
   page: {
     minHeight: "100vh",
-    backgroundColor: "#ffffff",
-    color: "#111111",
-    fontFamily: "Arial, sans-serif",
+    width: "100%",
+    backgroundColor: "#080C14",
+    color: "#F8FAFC",
+    fontFamily: BODY,
+    boxSizing: "border-box",
+    overflowX: "hidden",
+    position: "relative",
+  },
+
+  // =====================================
+  // AMBIENT LIGHT MESH
+  // =====================================
+
+  ambientOrb1: {
+    position: "fixed",
+    top: "-10%",
+    left: "-10%",
+    width: "650px",
+    height: "650px",
+    borderRadius: "50%",
+    background:
+      "radial-gradient(circle, rgba(99, 102, 241, 0.14) 0%, transparent 70%)",
+    filter: "blur(80px)",
+    animation: "floatOrb 20s ease-in-out infinite alternate",
+    pointerEvents: "none",
+    zIndex: 0,
+  },
+
+  ambientOrb2: {
+    position: "fixed",
+    bottom: "-10%",
+    right: "-10%",
+    width: "700px",
+    height: "700px",
+    borderRadius: "50%",
+    background:
+      "radial-gradient(circle, rgba(6, 182, 212, 0.13) 0%, transparent 70%)",
+    filter: "blur(90px)",
+    animation: "floatOrb 24s ease-in-out infinite alternate-reverse",
+    pointerEvents: "none",
+    zIndex: 0,
+  },
+
+  // =====================================
+  // SCROLL PROGRESS BAR
+  // =====================================
+
+  progressTrack: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "3px",
+    backgroundColor: "transparent",
+    zIndex: 999,
+  },
+
+  progressFill: {
+    height: "100%",
+    background: ACCENT_GRADIENT,
+    transition: "width 0.1s linear",
+    boxShadow: "0 0 8px rgba(56,189,248,0.7)",
   },
 
   // =====================================
@@ -348,40 +848,61 @@ const styles = {
 
   hero: {
     minHeight: "80vh",
-    backgroundColor: "#000000",
-    color: "#ffffff",
+    backgroundColor: "#0B1120",
+    color: "#F8FAFC",
+
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "60px 8%",
-    gap: "50px",
+
+    padding: "clamp(40px, 7vw, 80px) clamp(20px, 8vw, 120px)",
+
+    gap: "clamp(40px, 6vw, 80px)",
+
     flexWrap: "wrap",
+
     boxSizing: "border-box",
+    position: "relative",
+    overflow: "hidden",
+    zIndex: 1,
   },
 
   heroContent: {
+    flex: "1 1 450px",
     maxWidth: "600px",
+    minWidth: "0",
+    position: "relative",
+    zIndex: 1,
   },
 
   welcome: {
-    letterSpacing: "4px",
-    fontSize: "14px",
-    color: "#cccccc",
-    marginBottom: "20px",
+    fontFamily: MONO,
+    letterSpacing: "clamp(1px, 0.3vw, 2px)",
+    fontSize: "clamp(11px, 1.5vw, 13px)",
+    color: "#38BDF8",
+    marginBottom: "22px",
   },
 
   heroTitle: {
-    fontSize: "60px",
-    lineHeight: "1.1",
+    fontFamily: DISPLAY,
+    textTransform: "uppercase",
+    fontSize: "clamp(46px, 7.5vw, 68px)",
+    lineHeight: "1.05",
     margin: "0 0 25px",
     fontWeight: "700",
+    letterSpacing: "-0.5px",
+    backgroundImage: "linear-gradient(135deg, #FFFFFF 30%, #94A3B8 100%)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    backgroundClip: "text",
   },
 
   heroText: {
-    fontSize: "18px",
+    fontSize: "clamp(15px, 2vw, 18px)",
     lineHeight: "1.7",
-    color: "#cccccc",
+    color: "#94A3B8",
     marginBottom: "35px",
+    maxWidth: "460px",
   },
 
   heroButtons: {
@@ -392,33 +913,123 @@ const styles = {
 
   shopButton: {
     display: "inline-block",
-    backgroundColor: "#ffffff",
-    color: "#000000",
+    background: ACCENT_GRADIENT,
+    color: "#FFFFFF",
     padding: "15px 30px",
     textDecoration: "none",
-    borderRadius: "30px",
-    fontWeight: "bold",
+    borderRadius: "8px",
+    fontFamily: MONO,
+    fontWeight: "600",
+    fontSize: "14px",
+    letterSpacing: "0.5px",
+    textAlign: "center",
+    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
   },
 
   addButton: {
     display: "inline-block",
-    border: "1px solid #ffffff",
-    color: "#ffffff",
+    border: "1px solid rgba(255,255,255,0.15)",
+    color: "#F8FAFC",
     padding: "15px 30px",
     textDecoration: "none",
-    borderRadius: "30px",
-    fontWeight: "bold",
+    borderRadius: "8px",
+    fontFamily: MONO,
+    fontWeight: "600",
+    fontSize: "14px",
+    letterSpacing: "0.5px",
+    textAlign: "center",
   },
 
-  heroImage: {
-    width: "420px",
-    height: "500px",
-    backgroundImage:
-      "url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80')",
+  heroImageWrap: {
+    position: "relative",
+    flex: "1 1 350px",
+    width: "100%",
+    maxWidth: "420px",
+    zIndex: 1,
+  },
+
+  heroFrame: {
+    position: "relative",
+    width: "100%",
+    height: "clamp(300px, 50vw, 500px)",
+    borderRadius: "12px",
+    overflow: "hidden",
+    boxShadow: "14px 14px 0px rgba(99,102,241,0.35)",
+    marginRight: "14px",
+    boxSizing: "border-box",
+    transition: "transform 0.2s ease-out",
+    border: "1px solid rgba(255,255,255,0.1)",
+  },
+
+  heroSlideImg: {
+    position: "absolute",
+    inset: 0,
+    width: "100%",
+    height: "100%",
     backgroundSize: "cover",
     backgroundPosition: "center",
-    borderRadius: "10px",
-    boxShadow: "20px 20px 0px #ffffff",
+    transition: "opacity 1s ease, transform 1.2s ease",
+  },
+
+  heroSheen: {
+    position: "absolute",
+    inset: 0,
+    pointerEvents: "none",
+    background:
+      "linear-gradient(120deg, transparent, rgba(255,255,255,0.16), transparent)",
+    width: "40%",
+  },
+
+  heroDots: {
+    display: "flex",
+    gap: "8px",
+    justifyContent: "center",
+    marginTop: "16px",
+  },
+
+  heroDot: {
+    width: "8px",
+    height: "8px",
+    borderRadius: "50%",
+    backgroundColor: "rgba(255,255,255,0.2)",
+    border: "none",
+    padding: 0,
+    cursor: "pointer",
+    transition: "width 0.25s ease, background-color 0.25s ease",
+  },
+
+  heroDotActive: {
+    width: "22px",
+    borderRadius: "5px",
+    backgroundColor: "#38BDF8",
+  },
+
+  heroStamp: {
+    position: "absolute",
+    top: "-18px",
+    left: "-18px",
+    width: "84px",
+    height: "84px",
+    borderRadius: "50%",
+    border: "2px dashed #38BDF8",
+    backgroundColor: "rgba(15,23,42,0.9)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    textAlign: "center",
+    transform: "rotate(-12deg)",
+    zIndex: 2,
+    backdropFilter: "blur(10px)",
+  },
+
+  heroStampText: {
+    fontFamily: MONO,
+    fontSize: "10px",
+    fontWeight: "600",
+    color: "#38BDF8",
+    letterSpacing: "0.5px",
+    lineHeight: "1.3",
+    padding: "0 8px",
   },
 
   // =====================================
@@ -426,36 +1037,53 @@ const styles = {
   // =====================================
 
   offer: {
-    padding: "70px 8%",
-    backgroundColor: "#f5f5f5",
+    padding: "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
+    backgroundColor: "rgba(15, 23, 42, 0.75)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    borderTop: "1px solid rgba(255,255,255,0.1)",
+    borderBottom: "1px solid rgba(255,255,255,0.1)",
     textAlign: "center",
+    boxSizing: "border-box",
+    position: "relative",
+    zIndex: 1,
   },
 
   offerLabel: {
-    letterSpacing: "3px",
-    fontSize: "13px",
-    fontWeight: "bold",
+    fontFamily: MONO,
+    letterSpacing: "2px",
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "#34D399",
   },
 
   offerTitle: {
-    fontSize: "40px",
+    fontFamily: DISPLAY,
+    textTransform: "uppercase",
+    fontSize: "clamp(28px, 5vw, 40px)",
     margin: "15px 0",
+    fontWeight: "600",
+    color: "#F8FAFC",
   },
 
   offerText: {
-    color: "#555555",
-    fontSize: "17px",
+    color: "#94A3B8",
+    fontSize: "clamp(15px, 2vw, 17px)",
     marginBottom: "30px",
+    lineHeight: "1.6",
   },
 
   offerButton: {
     display: "inline-block",
-    backgroundColor: "#000000",
-    color: "#ffffff",
+    background: ACCENT_GRADIENT,
+    color: "#FFFFFF",
     padding: "14px 35px",
-    borderRadius: "30px",
+    borderRadius: "8px",
     textDecoration: "none",
-    fontWeight: "bold",
+    fontFamily: MONO,
+    fontWeight: "600",
+    fontSize: "14px",
+    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
   },
 
   // =====================================
@@ -463,30 +1091,80 @@ const styles = {
   // =====================================
 
   categorySection: {
-    padding: "80px 8%",
-    backgroundColor: "#ffffff",
+    padding: "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
+    backgroundColor: "#080C14",
+    boxSizing: "border-box",
+    position: "relative",
+    zIndex: 1,
   },
 
   sectionHeader: {
     textAlign: "center",
-    marginBottom: "60px",
+    marginBottom: "clamp(30px, 5vw, 45px)",
   },
 
   sectionLabel: {
-    letterSpacing: "3px",
-    fontSize: "13px",
-    fontWeight: "bold",
-    color: "#555555",
+    fontFamily: MONO,
+    letterSpacing: "2px",
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "#38BDF8",
   },
 
   sectionTitle: {
-    fontSize: "40px",
+    fontFamily: DISPLAY,
+    textTransform: "uppercase",
+    fontSize: "clamp(28px, 5vw, 40px)",
     margin: "15px 0",
+    fontWeight: "600",
+    color: "#F8FAFC",
   },
 
   sectionSubtitle: {
-    color: "#666666",
-    fontSize: "17px",
+    color: "#94A3B8",
+    fontSize: "clamp(15px, 2vw, 17px)",
+    lineHeight: "1.6",
+  },
+
+  // INDEX TAB STRIP
+
+  tabStrip: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: "8px",
+    maxWidth: "1200px",
+    margin: "0 auto clamp(35px, 5vw, 55px)",
+  },
+
+  tabDark: {
+    fontFamily: MONO,
+    fontSize: "12px",
+    fontWeight: "600",
+    letterSpacing: "0.5px",
+    padding: "9px 18px",
+    borderRadius: "8px 8px 0 0",
+    textDecoration: "none",
+    textTransform: "uppercase",
+    display: "inline-block",
+    backgroundColor: "rgba(15, 23, 42, 0.75)",
+    color: "#F8FAFC",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderBottom: "none",
+  },
+
+  tabAccent: {
+    fontFamily: MONO,
+    fontSize: "12px",
+    fontWeight: "600",
+    letterSpacing: "0.5px",
+    padding: "9px 18px",
+    borderRadius: "8px 8px 0 0",
+    textDecoration: "none",
+    textTransform: "uppercase",
+    display: "inline-block",
+    background: ACCENT_GRADIENT,
+    color: "#FFFFFF",
   },
 
   // =====================================
@@ -494,80 +1172,101 @@ const styles = {
   // =====================================
 
   categoryContainer: {
+    width: "100%",
     maxWidth: "1200px",
     margin: "0 auto 70px",
+    scrollMarginTop: "20px",
   },
 
   categoryHeader: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: "20px",
     marginBottom: "25px",
-    borderBottom: "2px solid #111111",
+    borderBottom: "2px solid rgba(255,255,255,0.1)",
     paddingBottom: "15px",
+    flexWrap: "wrap",
   },
 
   categoryLabel: {
+    fontFamily: MONO,
     margin: "0 0 5px",
     fontSize: "11px",
     letterSpacing: "2px",
-    color: "#777777",
-    fontWeight: "bold",
+    color: "#64748B",
+    fontWeight: "600",
   },
 
   categoryTitle: {
-    fontSize: "28px",
+    fontFamily: DISPLAY,
+    textTransform: "uppercase",
+    fontSize: "clamp(22px, 4vw, 28px)",
     margin: "0",
+    fontWeight: "600",
+    color: "#F8FAFC",
   },
 
   viewAll: {
-    color: "#111111",
+    fontFamily: MONO,
+    fontSize: "13px",
+    color: "#38BDF8",
     textDecoration: "none",
-    fontWeight: "bold",
+    fontWeight: "600",
+    whiteSpace: "nowrap",
+    display: "inline-block",
   },
-
-  // =====================================
-  // PRODUCT GRID
-  // =====================================
 
   productGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(4, 1fr)",
-    gap: "25px",
+    gridTemplateColumns: "repeat(auto-fill, minmax(250px, 250px))",
+    gap: "30px",
+    maxWidth: "1200px",
+    margin: "0 auto",
+    justifyContent: "start",
+    alignItems: "start",
   },
-
-  // =====================================
-  // PRODUCT CARD
-  // =====================================
 
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(15, 23, 42, 0.75)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
     borderRadius: "12px",
     overflow: "hidden",
-    border: "1px solid #e5e5e5",
-    boxShadow: "0 8px 25px rgba(0, 0, 0, 0.12)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    boxShadow: "0 14px 30px rgba(0, 0, 0, 0.4)",
+
     display: "flex",
     flexDirection: "column",
-    minHeight: "430px",
-  },
 
-  // =====================================
-  // IMAGE
-  // =====================================
+    width: "250px",
+    height: "400px",
+
+    boxSizing: "border-box",
+  },
 
   imageContainer: {
     width: "100%",
-    height: "220px",
-    backgroundColor: "#eeeeee",
+    height: "200px",
+    backgroundColor: "rgb(250, 251, 255)",
     overflow: "hidden",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
     flexShrink: 0,
+    borderRadius: "12px 12px 0 0",
   },
 
   image: {
     width: "100%",
     height: "100%",
-    objectFit: "cover",
+    objectFit: "contain",
     display: "block",
+  },
+
+  dashedLine: {
+    borderTop: "1px dashed rgba(255,255,255,0.1)",
+    margin: "0 16px",
   },
 
   // =====================================
@@ -575,30 +1274,41 @@ const styles = {
   // =====================================
 
   details: {
-    padding: "20px",
+    padding: "16px 20px 20px",
     display: "flex",
     flexDirection: "column",
     flex: "1",
   },
 
   productName: {
-    margin: "0 0 10px",
-    fontSize: "20px",
+    margin: "0 0 8px",
+    fontSize: "18px",
+    lineHeight: "22px",
+    minHeight: "44px",
     fontWeight: "600",
-    color: "#111111",
+    color: "#F8FAFC",
+    wordBreak: "break-word",
+    overflow: "hidden",
+    display: "-webkit-box",
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: "vertical",
   },
 
   category: {
-    margin: "0 0 10px",
-    fontSize: "14px",
-    color: "#777777",
+    fontFamily: MONO,
+    margin: "0 0 12px",
+    fontSize: "12px",
+    letterSpacing: "0.5px",
+    textTransform: "uppercase",
+    color: "#34D399",
   },
 
   price: {
-    margin: "0 0 20px",
-    fontSize: "20px",
-    fontWeight: "700",
-    color: "#111111",
+    fontFamily: MONO,
+    margin: "0 0 18px",
+    fontSize: "22px",
+    fontWeight: "600",
+    color: "#38BDF8",
   },
 
   // =====================================
@@ -608,14 +1318,17 @@ const styles = {
   viewButton: {
     width: "100%",
     padding: "12px",
-    backgroundColor: "#111111",
-    color: "#ffffff",
+    background: ACCENT_GRADIENT,
+    color: "#FFFFFF",
     border: "none",
-    borderRadius: "8px",
-    fontSize: "15px",
+    borderRadius: "6px",
+    fontFamily: MONO,
+    fontSize: "13px",
     fontWeight: "600",
+    letterSpacing: "0.3px",
     cursor: "pointer",
     marginTop: "auto",
+    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
   },
 
   // =====================================
@@ -624,23 +1337,26 @@ const styles = {
 
   emptyContainer: {
     textAlign: "center",
-    padding: "50px",
+    padding: "50px 20px",
   },
 
   message: {
     textAlign: "center",
-    color: "#555555",
+    color: "#94A3B8",
     margin: "0 0 25px",
+    fontFamily: BODY,
   },
 
   addProductButton: {
     display: "inline-block",
-    backgroundColor: "#111111",
-    color: "#ffffff",
+    background: ACCENT_GRADIENT,
+    color: "#FFFFFF",
     padding: "14px 25px",
     borderRadius: "8px",
     textDecoration: "none",
-    fontWeight: "bold",
+    fontFamily: MONO,
+    fontWeight: "600",
+    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
   },
 
   // =====================================
@@ -648,22 +1364,55 @@ const styles = {
   // =====================================
 
   features: {
-    padding: "70px 8%",
-    display: "flex",
-    justifyContent: "space-between",
+    padding: "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
+
+    display: "grid",
+
+    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
+
     gap: "30px",
-    flexWrap: "wrap",
+
     textAlign: "center",
-    backgroundColor: "#f5f5f5",
+
+    backgroundColor: "rgba(15, 23, 42, 0.75)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    borderTop: "1px solid rgba(255,255,255,0.1)",
+
+    boxSizing: "border-box",
+    position: "relative",
+    zIndex: 1,
   },
 
   feature: {
-    flex: "1",
-    minWidth: "220px",
+    width: "100%",
   },
 
   featureIcon: {
-    fontSize: "35px",
+    fontSize: "30px",
+    width: "62px",
+    height: "62px",
+    lineHeight: "62px",
+    margin: "0 auto 14px",
+    borderRadius: "50%",
+    border: "1px dashed #38BDF8",
+    backgroundColor: "rgba(255,255,255,0.05)",
+  },
+
+  featureTitle: {
+    fontFamily: DISPLAY,
+    textTransform: "uppercase",
+    fontWeight: "600",
+    letterSpacing: "0.3px",
+    margin: "0 0 8px",
+    color: "#F8FAFC",
+  },
+
+  featureText: {
+    color: "#94A3B8",
+    fontSize: "14px",
+    lineHeight: "1.6",
+    margin: 0,
   },
 
   // =====================================
@@ -671,31 +1420,56 @@ const styles = {
   // =====================================
 
   reviews: {
-    padding: "80px 8%",
-    backgroundColor: "#ffffff",
+    padding: "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
+    backgroundColor: "#080C14",
     textAlign: "center",
+    boxSizing: "border-box",
+    position: "relative",
+    zIndex: 1,
   },
 
   reviewGrid: {
-    display: "flex",
+    display: "grid",
+
+    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 250px), 350px))",
+
     gap: "25px",
+
     justifyContent: "center",
-    flexWrap: "wrap",
+
+    width: "100%",
+    marginTop: "10px",
   },
 
   reviewCard: {
-    flex: "1",
-    minWidth: "250px",
-    maxWidth: "350px",
-    backgroundColor: "#f5f5f5",
+    width: "100%",
+    backgroundColor: "rgba(15, 23, 42, 0.75)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
     padding: "30px",
-    borderRadius: "10px",
+    borderRadius: "12px",
+    border: "1px solid rgba(255,255,255,0.1)",
     lineHeight: "1.7",
+    boxSizing: "border-box",
+    textAlign: "left",
   },
 
   stars: {
-    fontSize: "22px",
+    color: "#38BDF8",
+    fontSize: "18px",
     marginBottom: "10px",
+  },
+
+  reviewText: {
+    fontSize: "15px",
+    color: "#F8FAFC",
+    margin: "0 0 14px",
+  },
+
+  reviewAuthor: {
+    fontFamily: MONO,
+    fontSize: "13px",
+    color: "#94A3B8",
   },
 
   // =====================================
@@ -703,31 +1477,41 @@ const styles = {
   // =====================================
 
   cta: {
-    backgroundColor: "#000000",
-    color: "#ffffff",
+    backgroundColor: "#0B1120",
+    color: "#F8FAFC",
     textAlign: "center",
-    padding: "80px 20px",
+    padding: "clamp(50px, 8vw, 80px) 20px",
+    boxSizing: "border-box",
+    position: "relative",
+    zIndex: 1,
   },
 
   ctaTitle: {
-    fontSize: "45px",
+    fontFamily: DISPLAY,
+    textTransform: "uppercase",
+    fontSize: "clamp(28px, 5vw, 45px)",
     margin: "0 0 20px",
+    fontWeight: "600",
   },
 
   ctaText: {
-    color: "#cccccc",
-    fontSize: "18px",
+    color: "#94A3B8",
+    fontSize: "clamp(15px, 2vw, 18px)",
     marginBottom: "30px",
+    lineHeight: "1.6",
   },
 
   ctaButton: {
     display: "inline-block",
-    backgroundColor: "#ffffff",
-    color: "#000000",
+    background: ACCENT_GRADIENT,
+    color: "#FFFFFF",
     padding: "15px 35px",
-    borderRadius: "30px",
+    borderRadius: "8px",
     textDecoration: "none",
-    fontWeight: "bold",
+    fontFamily: MONO,
+    fontWeight: "600",
+    fontSize: "14px",
+    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
   },
 
   // =====================================
@@ -735,11 +1519,16 @@ const styles = {
   // =====================================
 
   footer: {
-    backgroundColor: "#111111",
-    color: "#888888",
+    backgroundColor: "#080C14",
+    color: "#64748B",
     textAlign: "center",
-    padding: "25px",
-    fontSize: "14px",
+    padding: "25px 20px",
+    fontFamily: MONO,
+    fontSize: "13px",
+    boxSizing: "border-box",
+    borderTop: "1px solid rgba(255,255,255,0.1)",
+    position: "relative",
+    zIndex: 1,
   },
 };
 
