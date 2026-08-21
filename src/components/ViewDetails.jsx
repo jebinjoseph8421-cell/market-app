@@ -27,7 +27,7 @@ function ViewDetails() {
 
       // Get current product
       const response = await axios.get(
-        `https://industries-harold-developer-those.trycloudflare.com/api/products/${id}`,
+        `https://market-backend-2-xcn9.onrender.com/api/products/${id}`,
       );
 
       const currentProduct = response.data;
@@ -35,7 +35,7 @@ function ViewDetails() {
 
       // Get all products
       const allProductsResponse = await axios.get(
-        "https://industries-harold-developer-those.trycloudflare.com/api/products/all",
+        "https://market-backend-2-xcn9.onrender.com/api/products/all",
       );
 
       // Filter same category, exclude current product
@@ -76,7 +76,7 @@ function ViewDetails() {
       setAddingToCart(true);
 
       const response = await axios.post(
-        `https://industries-harold-developer-those.trycloudflare.com/api/products/cart/${userId}/add/${product.id}`,
+        `https://market-backend-2-xcn9.onrender.com/api/products/cart/${userId}/add/${product.id}`,
       );
 
       console.log("Cart response:", response.data);
@@ -110,7 +110,7 @@ function ViewDetails() {
 
     try {
       await axios.delete(
-        `https://industries-harold-developer-those.trycloudflare.com/api/products/${id}`,
+        `https://market-backend-2-xcn9.onrender.com/api/products/${id}`,
       );
       alert("Product deleted successfully!");
       navigate("/all");
@@ -214,7 +214,7 @@ function ViewDetails() {
             style={styles.imageContainer}
           >
             <img
-              src={`https://industries-harold-developer-those.trycloudflare.com/uploads/${product.productImg}`}
+              src={`https://market-backend-2-xcn9.onrender.com/uploads/${product.productImg}`}
               alt={product.name}
               style={styles.image}
               onError={(e) => {
@@ -293,7 +293,7 @@ function ViewDetails() {
                 >
                   <img
                     className="vd-related-image"
-                    src={`https://industries-harold-developer-those.trycloudflare.com/uploads/${relatedProduct.productImg}`}
+                    src={`https://market-backend-2-xcn9.onrender.com/uploads/${relatedProduct.productImg}`}
                     alt={relatedProduct.name}
                     style={styles.relatedImage}
                     onError={(e) => {

@@ -22,8 +22,7 @@ function Cart() {
   // SPRING BOOT API URL
   // ==========================================
 
-  const BASE_URL =
-    "https://industries-harold-developer-those.trycloudflare.com/api/products";
+  const BASE_URL = "https://market-backend-2-xcn9.onrender.com/api/products";
 
   // ==========================================
   // GET CART
@@ -720,7 +719,7 @@ function Cart() {
                     {/* PRODUCT IMAGE */}
 
                     <img
-                      src={`https://industries-harold-developer-those.trycloudflare.com/uploads/${product.productImg}`}
+                      src={`https://market-backend-2-xcn9.onrender.com/uploads/${product.productImg}`}
                       alt={product.name}
                       className="product-image"
                       onError={(e) => {

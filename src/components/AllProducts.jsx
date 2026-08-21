@@ -13,8 +13,7 @@ function AllProducts() {
 
   const navigate = useNavigate();
 
-  const BASE_URL =
-    "https://industries-harold-developer-those.trycloudflare.com/api/products";
+  const BASE_URL = "https://market-backend-2-xcn9.onrender.com/api/products";
 
   // =====================================================
   // GET ALL PRODUCTS (UNCHANGED)
@@ -640,7 +639,7 @@ function AllProducts() {
                 {/* PRODUCT IMAGE */}
                 <div className="image-container">
                   <img
-                    src={`https://industries-harold-developer-those.trycloudflare.com/uploads/${product.productImg}`}
+                    src={`https://market-backend-2-xcn9.onrender.com/uploads/${product.productImg}`}
                     alt={product.name}
                     className="product-image"
                     onError={(e) => {

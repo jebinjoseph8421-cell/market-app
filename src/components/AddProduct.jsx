@@ -59,7 +59,7 @@ function AddProduct() {
     try {
       // SEND PRODUCT TO SPRING BOOT (UNCHANGED ENDPOINT)
       const response = await axios.post(
-        "https://industries-harold-developer-those.trycloudflare.com/api/products/add",
+        "https://market-backend-2-xcn9.onrender.com/api/products/add",
         formData,
       );
 

@@ -59,7 +59,7 @@ function App() {
   const getProducts = async () => {
     try {
       const response = await axios.get(
-        "https://industries-harold-developer-those.trycloudflare.com/api/products/all",
+        "https://market-backend-2-xcn9.onrender.com/api/products/all",
       );
 
       console.log("Products:", response.data);
@@ -412,7 +412,7 @@ function App() {
 
                       <div style={styles.imageContainer}>
                         <img
-                          src={`https://industries-harold-developer-those.trycloudflare.com/uploads/${product.productImg}`}
+                          src={`https://market-backend-2-xcn9.onrender.com/uploads/${product.productImg}`}
                           alt={product.name}
                           style={styles.image}
                           className="product-image"

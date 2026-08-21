@@ -34,7 +34,7 @@ function Profile() {
 
         // Get profile using email (UNCHANGED ENDPOINT)
         const response = await axios.get(
-          `https://industries-harold-developer-those.trycloudflare.com/api/products/user-profile/${encodeURIComponent(
+          `https://market-backend-2-xcn9.onrender.com/api/products/user-profile/${encodeURIComponent(
             loggedInUser.email,
           )}`,
         );

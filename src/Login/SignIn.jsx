@@ -54,7 +54,7 @@ function SignIn() {
     try {
       // SEND LOGIN REQUEST TO SPRING BOOT
       const response = await axios.post(
-        "https://industries-harold-developer-those.trycloudflare.com/api/products/signin",
+        "https://market-backend-2-xcn9.onrender.com/api/products/signin",
         loginData,
       );
 
@@ -118,7 +118,7 @@ function SignIn() {
       // SEND GOOGLE CREDENTIAL TO SPRING BOOT
       // ==========================================
       const response = await axios.post(
-        "https://industries-harold-developer-those.trycloudflare.com/api/products/google-signin",
+        "https://market-backend-2-xcn9.onrender.com/api/products/google-signin",
         {
           credential: credentialResponse.credential,
         },

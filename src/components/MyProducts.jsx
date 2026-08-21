@@ -23,7 +23,7 @@ function MyProducts() {
     // GET ONLY THIS USER'S PRODUCTS (UNCHANGED ENDPOINT)
     axios
       .get(
-        `https://industries-harold-developer-those.trycloudflare.com/api/products/user/${userId}`,
+        `https://market-backend-2-xcn9.onrender.com/api/products/user/${userId}`,
       )
       .then((response) => {
         console.log("My Products:", response.data);
@@ -54,7 +54,7 @@ function MyProducts() {
 
       // DELETE PRODUCT FROM BACKEND
       await axios.delete(
-        `https://industries-harold-developer-those.trycloudflare.com/api/products/${productId}`,
+        `https://market-backend-2-xcn9.onrender.com/api/products/${productId}`,
       );
 
       // REMOVE PRODUCT FROM CURRENT PAGE
@@ -206,7 +206,7 @@ function MyProducts() {
               {/* PRODUCT IMAGE (PRESERVED WHITE BACKGROUND COLOR) */}
               <div className="mp-image-wrap">
                 <img
-                  src={`https://industries-harold-developer-those.trycloudflare.com/uploads/${product.productImg}`}
+                  src={`https://market-backend-2-xcn9.onrender.com/uploads/${product.productImg}`}
                   alt={product.name}
                   className="mp-image"
                   onError={(e) => {
