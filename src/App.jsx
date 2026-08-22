@@ -178,8 +178,7 @@ function App() {
       const docHeight =
         document.documentElement.scrollHeight - window.innerHeight;
 
-      const progress =
-        docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
 
       setScrollProgress(Math.min(100, Math.max(0, progress)));
     };
@@ -301,19 +300,11 @@ function App() {
           </p>
 
           <div style={styles.heroButtons}>
-            <Link
-              to="/all"
-              style={styles.shopButton}
-              className="btn-shine"
-            >
+            <Link to="/all" style={styles.shopButton} className="btn-shine">
               Shop Now →
             </Link>
 
-            <Link
-              to="/add"
-              style={styles.addButton}
-              className="btn-outline"
-            >
+            <Link to="/add" style={styles.addButton} className="btn-outline">
               Add Product
             </Link>
           </div>
@@ -345,28 +336,16 @@ function App() {
                   ...styles.heroSlideImg,
                   backgroundImage: `url('${slide.image}')`,
                   opacity: i === currentSlide ? 1 : 0,
-                  transform:
-                    i === currentSlide
-                      ? "scale(1)"
-                      : "scale(1.08)",
+                  transform: i === currentSlide ? "scale(1)" : "scale(1.08)",
                 }}
               />
             ))}
 
-            <div
-              style={styles.heroSheen}
-              className="hero-sheen"
-            />
+            <div style={styles.heroSheen} className="hero-sheen" />
           </div>
 
-          <div
-            style={styles.heroStamp}
-            className="stamp-float"
-          >
-            <span
-              key={`stamp-${currentSlide}`}
-              style={styles.heroStampText}
-            >
+          <div style={styles.heroStamp} className="stamp-float">
+            <span key={`stamp-${currentSlide}`} style={styles.heroStampText}>
               {activeSlide.stamp}
             </span>
           </div>
@@ -379,13 +358,9 @@ function App() {
                 aria-label={`Show slide ${i + 1}`}
                 style={{
                   ...styles.heroDot,
-                  ...(i === currentSlide
-                    ? styles.heroDotActive
-                    : {}),
+                  ...(i === currentSlide ? styles.heroDotActive : {}),
                 }}
-                className={
-                  i === currentSlide ? "dot-active" : ""
-                }
+                className={i === currentSlide ? "dot-active" : ""}
               />
             ))}
           </div>
@@ -397,24 +372,15 @@ function App() {
       ===================================================== */}
 
       <Reveal as="section" style={styles.offer}>
-        <p style={styles.offerLabel}>
-          LIMITED TIME OFFER
-        </p>
+        <p style={styles.offerLabel}>LIMITED TIME OFFER</p>
 
-        <h2 style={styles.offerTitle}>
-          Get 20% Off Your First Order
-        </h2>
+        <h2 style={styles.offerTitle}>Get 20% Off Your First Order</h2>
 
         <p style={styles.offerText}>
-          Start shopping today and enjoy exclusive savings
-          on selected products.
+          Start shopping today and enjoy exclusive savings on selected products.
         </p>
 
-        <Link
-          to="/all"
-          style={styles.offerButton}
-          className="btn-shine"
-        >
+        <Link to="/all" style={styles.offerButton} className="btn-shine">
           Explore Offers
         </Link>
       </Reveal>
@@ -425,17 +391,12 @@ function App() {
 
       <section style={styles.categorySection}>
         <Reveal style={styles.sectionHeader}>
-          <p style={styles.sectionLabel}>
-            SHOP BY CATEGORY
-          </p>
+          <p style={styles.sectionLabel}>SHOP BY CATEGORY</p>
 
-          <h2 style={styles.sectionTitle}>
-            Explore Our Collection
-          </h2>
+          <h2 style={styles.sectionTitle}>Explore Our Collection</h2>
 
           <p style={styles.sectionSubtitle}>
-            Find the perfect products from your favorite
-            categories.
+            Find the perfect products from your favorite categories.
           </p>
         </Reveal>
 
@@ -449,11 +410,7 @@ function App() {
               <a
                 key={category}
                 href={`#cat-${category}`}
-                style={
-                  i % 2 === 0
-                    ? styles.tabDark
-                    : styles.tabAccent
-                }
+                style={i % 2 === 0 ? styles.tabDark : styles.tabAccent}
                 className="tab-link"
               >
                 {category}
@@ -467,17 +424,12 @@ function App() {
         ===================================================== */}
 
         {loading ? (
-          <h2
-            style={styles.message}
-            className="pulse-text"
-          >
+          <h2 style={styles.message} className="pulse-text">
             Loading products...
           </h2>
         ) : products.length === 0 ? (
           <div style={styles.emptyContainer}>
-            <h2 style={styles.message}>
-              No products available
-            </h2>
+            <h2 style={styles.message}>No products available</h2>
 
             <Link
               to="/add"
@@ -509,13 +461,9 @@ function App() {
 
                 <Reveal style={styles.categoryHeader}>
                   <div className="category-heading">
-                    <p style={styles.categoryLabel}>
-                      CATEGORY
-                    </p>
+                    <p style={styles.categoryLabel}>CATEGORY</p>
 
-                    <h2 style={styles.categoryTitle}>
-                      {category}
-                    </h2>
+                    <h2 style={styles.categoryTitle}>{category}</h2>
                   </div>
 
                   <Link
@@ -529,82 +477,60 @@ function App() {
 
                 {/* PRODUCT GRID */}
 
-                <div
-                  style={styles.productGrid}
-                  className="product-grid"
-                >
-                  {categoryProducts
-                    .slice(0, 4)
-                    .map((product, i) => (
-                      <Reveal
-                        key={product.id}
-                        style={styles.card}
-                        className="product-card mobile-product-card"
-                        delay={i * 90}
+                <div style={styles.productGrid} className="product-grid">
+                  {categoryProducts.slice(0, 4).map((product, i) => (
+                    <Reveal
+                      key={product.id}
+                      style={styles.card}
+                      className="product-card mobile-product-card"
+                      delay={i * 90}
+                    >
+                      {/* IMAGE */}
+
+                      <div
+                        style={styles.imageContainer}
+                        className="product-image-container"
                       >
-                        {/* IMAGE */}
-
-                        <div
-                          style={styles.imageContainer}
-                          className="product-image-container"
-                        >
-                          <img
-                            src={product.productImg}
-                            alt={product.name || "Product"}
-                            className="product-image"
-                            onError={(e) => {
-                              e.currentTarget.src =
-                                "https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&w=500&q=80";
-                            }}
-                          />
-                        </div>
-
-                        {/* DASHED LINE */}
-
-                        <div
-                          style={styles.dashedLine}
-                          className="dashedLine"
+                        <img
+                          src={product.productImg}
+                          alt={product.name || "Product"}
+                          className="product-image"
+                          onError={(e) => {
+                            e.currentTarget.src =
+                              "https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&w=500&q=80";
+                          }}
                         />
+                      </div>
 
-                        {/* DETAILS */}
+                      {/* DASHED LINE */}
 
-                        <div
-                          style={styles.details}
-                          className="details"
+                      <div style={styles.dashedLine} className="dashedLine" />
+
+                      {/* DETAILS */}
+
+                      <div style={styles.details} className="details">
+                        <h3 style={styles.productName} className="productName">
+                          {product.name}
+                        </h3>
+
+                        <p style={styles.category} className="category">
+                          {product.category}
+                        </p>
+
+                        <p style={styles.price} className="price">
+                          ₹{product.price}
+                        </p>
+
+                        <button
+                          onClick={() => viewDetails(product.id)}
+                          style={styles.viewButton}
+                          className="view-btn"
                         >
-                          <h3
-                            style={styles.productName}
-                            className="productName"
-                          >
-                            {product.name}
-                          </h3>
-
-                          <p
-                            style={styles.category}
-                            className="category"
-                          >
-                            {product.category}
-                          </p>
-
-                          <p
-                            style={styles.price}
-                            className="price"
-                          >
-                            ₹{product.price}
-                          </p>
-
-                          <button
-                            onClick={() =>
-                              viewDetails(product.id)
-                            }
-                            style={styles.viewButton}
-                            className="view-btn"
-                          >
-                            View Details
-                          </button>
-                        </div>
-                      </Reveal>
-                    ))}
+                          View Details
+                        </button>
+                      </div>
+                    </Reveal>
+                  ))}
                 </div>
               </div>
             );
@@ -645,20 +571,13 @@ function App() {
             className="feature"
             delay={i * 100}
           >
-            <div
-              style={styles.featureIcon}
-              className="feature-icon"
-            >
+            <div style={styles.featureIcon} className="feature-icon">
               {f.icon}
             </div>
 
-            <h3 style={styles.featureTitle}>
-              {f.title}
-            </h3>
+            <h3 style={styles.featureTitle}>{f.title}</h3>
 
-            <p style={styles.featureText}>
-              {f.text}
-            </p>
+            <p style={styles.featureText}>{f.text}</p>
           </Reveal>
         ))}
       </section>
@@ -669,13 +588,9 @@ function App() {
 
       <section style={styles.reviews}>
         <Reveal>
-          <p style={styles.sectionLabel}>
-            CUSTOMER REVIEWS
-          </p>
+          <p style={styles.sectionLabel}>CUSTOMER REVIEWS</p>
 
-          <h2 style={styles.sectionTitle}>
-            What Our Customers Say
-          </h2>
+          <h2 style={styles.sectionTitle}>What Our Customers Say</h2>
         </Reveal>
 
         <div style={styles.reviewGrid}>
@@ -699,20 +614,13 @@ function App() {
               className="review-card"
               delay={i * 120}
             >
-              <div
-                style={styles.stars}
-                className="stars"
-              >
+              <div style={styles.stars} className="stars">
                 ★★★★★
               </div>
 
-              <p style={styles.reviewText}>
-                {r.text}
-              </p>
+              <p style={styles.reviewText}>{r.text}</p>
 
-              <strong style={styles.reviewAuthor}>
-                {r.author}
-              </strong>
+              <strong style={styles.reviewAuthor}>{r.author}</strong>
             </Reveal>
           ))}
         </div>
@@ -722,25 +630,14 @@ function App() {
           CTA
       ===================================================== */}
 
-      <Reveal
-        as="section"
-        style={styles.cta}
-        className="cta-glow"
-      >
-        <h2 style={styles.ctaTitle}>
-          Ready to Find Your Next Favorite?
-        </h2>
+      <Reveal as="section" style={styles.cta} className="cta-glow">
+        <h2 style={styles.ctaTitle}>Ready to Find Your Next Favorite?</h2>
 
         <p style={styles.ctaText}>
-          Browse our complete collection and discover
-          something special.
+          Browse our complete collection and discover something special.
         </p>
 
-        <Link
-          to="/all"
-          style={styles.ctaButton}
-          className="btn-shine"
-        >
+        <Link to="/all" style={styles.ctaButton} className="btn-shine">
           Start Shopping →
         </Link>
       </Reveal>
@@ -749,9 +646,7 @@ function App() {
           FOOTER
       ===================================================== */}
 
-      <footer style={styles.footer}>
-        © 2026 Market. All Rights Reserved.
-      </footer>
+      <footer style={styles.footer}>© 2026 Market. All Rights Reserved.</footer>
     </div>
   );
 }
@@ -764,8 +659,7 @@ const DISPLAY = "'Space Grotesk', sans-serif";
 const BODY = "'Plus Jakarta Sans', sans-serif";
 const MONO = "'JetBrains Mono', monospace";
 
-const ACCENT_GRADIENT =
-  "linear-gradient(135deg, #06B6D4, #6366F1)";
+const ACCENT_GRADIENT = "linear-gradient(135deg, #06B6D4, #6366F1)";
 
 // =====================================================
 // GLOBAL ANIMATIONS + RESPONSIVE CSS
@@ -2085,8 +1979,7 @@ const styles = {
     background:
       "radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 70%)",
     filter: "blur(80px)",
-    animation:
-      "floatOrb 20s ease-in-out infinite alternate",
+    animation: "floatOrb 20s ease-in-out infinite alternate",
     pointerEvents: "none",
     zIndex: 0,
   },
@@ -2101,8 +1994,7 @@ const styles = {
     background:
       "radial-gradient(circle, rgba(6,182,212,0.13) 0%, transparent 70%)",
     filter: "blur(90px)",
-    animation:
-      "floatOrb 24s ease-in-out infinite alternate-reverse",
+    animation: "floatOrb 24s ease-in-out infinite alternate-reverse",
     pointerEvents: "none",
     zIndex: 0,
   },
@@ -2125,8 +2017,7 @@ const styles = {
     height: "100%",
     background: ACCENT_GRADIENT,
     transition: "width 0.1s linear",
-    boxShadow:
-      "0 0 8px rgba(56,189,248,0.7)",
+    boxShadow: "0 0 8px rgba(56,189,248,0.7)",
   },
 
   // =====================================================
@@ -2141,10 +2032,8 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding:
-      "clamp(40px, 6vw, 80px) clamp(20px, 5vw, 80px)",
-    gap:
-      "clamp(35px, 5vw, 70px)",
+    padding: "clamp(40px, 6vw, 80px) clamp(20px, 5vw, 80px)",
+    gap: "clamp(35px, 5vw, 70px)",
     flexWrap: "wrap",
     boxSizing: "border-box",
     position: "relative",
@@ -2153,8 +2042,7 @@ const styles = {
   },
 
   heroContent: {
-    flex:
-      "1 1 450px",
+    flex: "1 1 450px",
     maxWidth: "650px",
     minWidth: 0,
     position: "relative",
@@ -2163,10 +2051,8 @@ const styles = {
 
   welcome: {
     fontFamily: MONO,
-    letterSpacing:
-      "clamp(1px, 0.3vw, 2px)",
-    fontSize:
-      "clamp(10px, 1.5vw, 13px)",
+    letterSpacing: "clamp(1px, 0.3vw, 2px)",
+    fontSize: "clamp(10px, 1.5vw, 13px)",
     color: "#38BDF8",
     marginBottom: "22px",
   },
@@ -2174,22 +2060,19 @@ const styles = {
   heroTitle: {
     fontFamily: DISPLAY,
     textTransform: "uppercase",
-    fontSize:
-      "clamp(42px, 7vw, 72px)",
+    fontSize: "clamp(42px, 7vw, 72px)",
     lineHeight: "1.05",
     margin: "0 0 25px",
     fontWeight: "700",
     letterSpacing: "-0.5px",
-    backgroundImage:
-      "linear-gradient(135deg, #FFFFFF 30%, #94A3B8 100%)",
+    backgroundImage: "linear-gradient(135deg, #FFFFFF 30%, #94A3B8 100%)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
   },
 
   heroText: {
-    fontSize:
-      "clamp(14px, 2vw, 18px)",
+    fontSize: "clamp(14px, 2vw, 18px)",
     lineHeight: "1.7",
     color: "#94A3B8",
     marginBottom: "35px",
@@ -2214,14 +2097,12 @@ const styles = {
     fontSize: "14px",
     letterSpacing: "0.5px",
     textAlign: "center",
-    boxShadow:
-      "0 4px 15px rgba(6,182,212,0.25)",
+    boxShadow: "0 4px 15px rgba(6,182,212,0.25)",
   },
 
   addButton: {
     display: "inline-block",
-    border:
-      "1px solid rgba(255,255,255,0.15)",
+    border: "1px solid rgba(255,255,255,0.15)",
     color: "#F8FAFC",
     padding: "15px 30px",
     textDecoration: "none",
@@ -2239,8 +2120,7 @@ const styles = {
 
   heroImageWrap: {
     position: "relative",
-    flex:
-      "1 1 350px",
+    flex: "1 1 350px",
     width: "100%",
     maxWidth: "520px",
     zIndex: 1,
@@ -2249,18 +2129,14 @@ const styles = {
   heroFrame: {
     position: "relative",
     width: "100%",
-    height:
-      "clamp(300px, 45vw, 520px)",
+    height: "clamp(300px, 45vw, 520px)",
     borderRadius: "12px",
     overflow: "hidden",
-    boxShadow:
-      "14px 14px 0 rgba(99,102,241,0.35)",
+    boxShadow: "14px 14px 0 rgba(99,102,241,0.35)",
     marginRight: "14px",
     boxSizing: "border-box",
-    transition:
-      "transform 0.2s ease-out",
-    border:
-      "1px solid rgba(255,255,255,0.1)",
+    transition: "transform 0.2s ease-out",
+    border: "1px solid rgba(255,255,255,0.1)",
   },
 
   heroSlideImg: {
@@ -2270,8 +2146,7 @@ const styles = {
     height: "100%",
     backgroundSize: "cover",
     backgroundPosition: "center",
-    transition:
-      "opacity 1s ease, transform 1.2s ease",
+    transition: "opacity 1s ease, transform 1.2s ease",
   },
 
   heroSheen: {
@@ -2294,13 +2169,11 @@ const styles = {
     width: "8px",
     height: "8px",
     borderRadius: "50%",
-    backgroundColor:
-      "rgba(255,255,255,0.2)",
+    backgroundColor: "rgba(255,255,255,0.2)",
     border: "none",
     padding: 0,
     cursor: "pointer",
-    transition:
-      "width 0.25s ease, background-color 0.25s ease",
+    transition: "width 0.25s ease, background-color 0.25s ease",
   },
 
   heroDotActive: {
@@ -2316,10 +2189,8 @@ const styles = {
     width: "84px",
     height: "84px",
     borderRadius: "50%",
-    border:
-      "2px dashed #38BDF8",
-    backgroundColor:
-      "rgba(15,23,42,0.9)",
+    border: "2px dashed #38BDF8",
+    backgroundColor: "rgba(15,23,42,0.9)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -2345,16 +2216,12 @@ const styles = {
 
   offer: {
     width: "100%",
-    padding:
-      "clamp(50px, 8vw, 80px) clamp(20px, 5vw, 80px)",
-    backgroundColor:
-      "rgba(15,23,42,0.75)",
+    padding: "clamp(50px, 8vw, 80px) clamp(20px, 5vw, 80px)",
+    backgroundColor: "rgba(15,23,42,0.75)",
     backdropFilter: "blur(20px)",
     WebkitBackdropFilter: "blur(20px)",
-    borderTop:
-      "1px solid rgba(255,255,255,0.1)",
-    borderBottom:
-      "1px solid rgba(255,255,255,0.1)",
+    borderTop: "1px solid rgba(255,255,255,0.1)",
+    borderBottom: "1px solid rgba(255,255,255,0.1)",
     textAlign: "center",
     boxSizing: "border-box",
     position: "relative",
@@ -2372,8 +2239,7 @@ const styles = {
   offerTitle: {
     fontFamily: DISPLAY,
     textTransform: "uppercase",
-    fontSize:
-      "clamp(25px, 5vw, 40px)",
+    fontSize: "clamp(25px, 5vw, 40px)",
     margin: "15px 0",
     fontWeight: "600",
     color: "#F8FAFC",
@@ -2381,8 +2247,7 @@ const styles = {
 
   offerText: {
     color: "#94A3B8",
-    fontSize:
-      "clamp(14px, 2vw, 17px)",
+    fontSize: "clamp(14px, 2vw, 17px)",
     marginBottom: "30px",
     lineHeight: "1.6",
   },
@@ -2397,8 +2262,7 @@ const styles = {
     fontFamily: MONO,
     fontWeight: "600",
     fontSize: "14px",
-    boxShadow:
-      "0 4px 15px rgba(6,182,212,0.25)",
+    boxShadow: "0 4px 15px rgba(6,182,212,0.25)",
   },
 
   // =====================================================
@@ -2407,8 +2271,7 @@ const styles = {
 
   categorySection: {
     width: "100%",
-    padding:
-      "clamp(50px, 7vw, 80px) clamp(16px, 5vw, 80px)",
+    padding: "clamp(50px, 7vw, 80px) clamp(16px, 5vw, 80px)",
     backgroundColor: "#080C14",
     boxSizing: "border-box",
     position: "relative",
@@ -2418,8 +2281,7 @@ const styles = {
   sectionHeader: {
     width: "100%",
     textAlign: "center",
-    marginBottom:
-      "clamp(30px, 5vw, 45px)",
+    marginBottom: "clamp(30px, 5vw, 45px)",
   },
 
   sectionLabel: {
@@ -2433,8 +2295,7 @@ const styles = {
   sectionTitle: {
     fontFamily: DISPLAY,
     textTransform: "uppercase",
-    fontSize:
-      "clamp(25px, 5vw, 40px)",
+    fontSize: "clamp(25px, 5vw, 40px)",
     margin: "15px 0",
     fontWeight: "600",
     color: "#F8FAFC",
@@ -2442,8 +2303,7 @@ const styles = {
 
   sectionSubtitle: {
     color: "#94A3B8",
-    fontSize:
-      "clamp(14px, 2vw, 17px)",
+    fontSize: "clamp(14px, 2vw, 17px)",
     lineHeight: "1.6",
     margin: 0,
   },
@@ -2459,8 +2319,7 @@ const styles = {
     justifyContent: "center",
     gap: "8px",
     maxWidth: "1200px",
-    margin:
-      "0 auto clamp(35px, 5vw, 55px)",
+    margin: "0 auto clamp(35px, 5vw, 55px)",
   },
 
   tabDark: {
@@ -2469,16 +2328,13 @@ const styles = {
     fontWeight: "600",
     letterSpacing: "0.5px",
     padding: "9px 18px",
-    borderRadius:
-      "8px 8px 0 0",
+    borderRadius: "8px 8px 0 0",
     textDecoration: "none",
     textTransform: "uppercase",
     display: "inline-block",
-    backgroundColor:
-      "rgba(15,23,42,0.75)",
+    backgroundColor: "rgba(15,23,42,0.75)",
     color: "#F8FAFC",
-    border:
-      "1px solid rgba(255,255,255,0.1)",
+    border: "1px solid rgba(255,255,255,0.1)",
     borderBottom: "none",
   },
 
@@ -2488,8 +2344,7 @@ const styles = {
     fontWeight: "600",
     letterSpacing: "0.5px",
     padding: "9px 18px",
-    borderRadius:
-      "8px 8px 0 0",
+    borderRadius: "8px 8px 0 0",
     textDecoration: "none",
     textTransform: "uppercase",
     display: "inline-block",
@@ -2504,8 +2359,7 @@ const styles = {
   categoryContainer: {
     width: "100%",
     maxWidth: "1250px",
-    margin:
-      "0 auto 70px",
+    margin: "0 auto 70px",
     scrollMarginTop: "20px",
   },
 
@@ -2515,8 +2369,7 @@ const styles = {
     alignItems: "center",
     gap: "20px",
     marginBottom: "25px",
-    borderBottom:
-      "2px solid rgba(255,255,255,0.1)",
+    borderBottom: "2px solid rgba(255,255,255,0.1)",
     paddingBottom: "15px",
     flexWrap: "wrap",
     minWidth: 0,
@@ -2534,8 +2387,7 @@ const styles = {
   categoryTitle: {
     fontFamily: DISPLAY,
     textTransform: "uppercase",
-    fontSize:
-      "clamp(22px, 4vw, 28px)",
+    fontSize: "clamp(22px, 4vw, 28px)",
     margin: 0,
     fontWeight: "600",
     color: "#F8FAFC",
@@ -2557,8 +2409,7 @@ const styles = {
 
   productGrid: {
     display: "grid",
-    gridTemplateColumns:
-      "repeat(4, minmax(0, 1fr))",
+    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
     gap: "30px",
     width: "100%",
     maxWidth: "1250px",
@@ -2572,21 +2423,17 @@ const styles = {
   // =====================================================
 
   card: {
-    backgroundColor:
-      "rgba(15,23,42,0.75)",
+    backgroundColor: "rgba(15,23,42,0.75)",
     backdropFilter: "blur(20px)",
-    WebkitBackdropFilter:
-      "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
     borderRadius: "12px",
     overflow: "hidden",
-    border:
-      "1px solid rgba(255,255,255,0.1)",
-    boxShadow:
-      "0 14px 30px rgba(0,0,0,0.4)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    boxShadow: "0 14px 30px rgba(0,0,0,0.4)",
     display: "flex",
     flexDirection: "column",
     width: "100%",
-    height: "400px",
+    height: "300px",
     minWidth: 0,
     boxSizing: "border-box",
   },
@@ -2598,15 +2445,13 @@ const styles = {
   imageContainer: {
     width: "100%",
     height: "200px",
-    backgroundColor:
-      "rgb(250,251,255)",
+    backgroundColor: "rgb(250,251,255)",
     overflow: "hidden",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     flexShrink: 0,
-    borderRadius:
-      "12px 12px 0 0",
+    borderRadius: "12px 12px 0 0",
   },
 
   image: {
@@ -2617,10 +2462,8 @@ const styles = {
   },
 
   dashedLine: {
-    borderTop:
-      "1px dashed rgba(255,255,255,0.1)",
-    margin:
-      "0 16px",
+    borderTop: "1px dashed rgba(255,255,255,0.1)",
+    margin: "0 16px",
     flexShrink: 0,
   },
 
@@ -2629,8 +2472,7 @@ const styles = {
   // =====================================================
 
   details: {
-    padding:
-      "16px 20px 20px",
+    padding: "16px 20px 20px",
     display: "flex",
     flexDirection: "column",
     flex: 1,
@@ -2638,8 +2480,7 @@ const styles = {
   },
 
   productName: {
-    margin:
-      "0 0 8px",
+    margin: "0 0 8px",
     fontSize: "18px",
     lineHeight: "22px",
     minHeight: "44px",
@@ -2647,17 +2488,14 @@ const styles = {
     color: "#F8FAFC",
     wordBreak: "break-word",
     overflow: "hidden",
-    display:
-      "-webkit-box",
+    display: "-webkit-box",
     WebkitLineClamp: 2,
-    WebkitBoxOrient:
-      "vertical",
+    WebkitBoxOrient: "vertical",
   },
 
   category: {
     fontFamily: MONO,
-    margin:
-      "0 0 12px",
+    margin: "0 0 12px",
     fontSize: "12px",
     letterSpacing: "0.5px",
     textTransform: "uppercase",
@@ -2669,8 +2507,7 @@ const styles = {
 
   price: {
     fontFamily: MONO,
-    margin:
-      "0 0 18px",
+    margin: "0 0 18px",
     fontSize: "22px",
     fontWeight: "600",
     color: "#38BDF8",
@@ -2693,8 +2530,7 @@ const styles = {
     letterSpacing: "0.3px",
     cursor: "pointer",
     marginTop: "auto",
-    boxShadow:
-      "0 4px 15px rgba(6,182,212,0.25)",
+    boxShadow: "0 4px 15px rgba(6,182,212,0.25)",
   },
 
   // =====================================================
@@ -2704,15 +2540,13 @@ const styles = {
   emptyContainer: {
     width: "100%",
     textAlign: "center",
-    padding:
-      "50px 20px",
+    padding: "50px 20px",
   },
 
   message: {
     textAlign: "center",
     color: "#94A3B8",
-    margin:
-      "0 0 25px",
+    margin: "0 0 25px",
     fontFamily: BODY,
   },
 
@@ -2720,14 +2554,12 @@ const styles = {
     display: "inline-block",
     background: ACCENT_GRADIENT,
     color: "#FFFFFF",
-    padding:
-      "14px 25px",
+    padding: "14px 25px",
     borderRadius: "8px",
     textDecoration: "none",
     fontFamily: MONO,
     fontWeight: "600",
-    boxShadow:
-      "0 4px 15px rgba(6,182,212,0.25)",
+    boxShadow: "0 4px 15px rgba(6,182,212,0.25)",
   },
 
   // =====================================================
@@ -2736,20 +2568,15 @@ const styles = {
 
   features: {
     width: "100%",
-    padding:
-      "clamp(50px, 8vw, 80px) clamp(20px, 5vw, 80px)",
+    padding: "clamp(50px, 8vw, 80px) clamp(20px, 5vw, 80px)",
     display: "grid",
-    gridTemplateColumns:
-      "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
     gap: "30px",
     textAlign: "center",
-    backgroundColor:
-      "rgba(15,23,42,0.75)",
+    backgroundColor: "rgba(15,23,42,0.75)",
     backdropFilter: "blur(20px)",
-    WebkitBackdropFilter:
-      "blur(20px)",
-    borderTop:
-      "1px solid rgba(255,255,255,0.1)",
+    WebkitBackdropFilter: "blur(20px)",
+    borderTop: "1px solid rgba(255,255,255,0.1)",
     boxSizing: "border-box",
     position: "relative",
     zIndex: 1,
@@ -2764,13 +2591,10 @@ const styles = {
     width: "62px",
     height: "62px",
     lineHeight: "62px",
-    margin:
-      "0 auto 14px",
+    margin: "0 auto 14px",
     borderRadius: "50%",
-    border:
-      "1px dashed #38BDF8",
-    backgroundColor:
-      "rgba(255,255,255,0.05)",
+    border: "1px dashed #38BDF8",
+    backgroundColor: "rgba(255,255,255,0.05)",
   },
 
   featureTitle: {
@@ -2778,8 +2602,7 @@ const styles = {
     textTransform: "uppercase",
     fontWeight: "600",
     letterSpacing: "0.3px",
-    margin:
-      "0 0 8px",
+    margin: "0 0 8px",
     color: "#F8FAFC",
   },
 
@@ -2796,8 +2619,7 @@ const styles = {
 
   reviews: {
     width: "100%",
-    padding:
-      "clamp(50px, 8vw, 80px) clamp(20px, 5vw, 80px)",
+    padding: "clamp(50px, 8vw, 80px) clamp(20px, 5vw, 80px)",
     backgroundColor: "#080C14",
     textAlign: "center",
     boxSizing: "border-box",
@@ -2807,8 +2629,7 @@ const styles = {
 
   reviewGrid: {
     display: "grid",
-    gridTemplateColumns:
-      "repeat(auto-fit, minmax(min(100%, 250px), 350px))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 250px), 350px))",
     gap: "25px",
     justifyContent: "center",
     width: "100%",
@@ -2817,15 +2638,12 @@ const styles = {
 
   reviewCard: {
     width: "100%",
-    backgroundColor:
-      "rgba(15,23,42,0.75)",
+    backgroundColor: "rgba(15,23,42,0.75)",
     backdropFilter: "blur(20px)",
-    WebkitBackdropFilter:
-      "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
     padding: "30px",
     borderRadius: "12px",
-    border:
-      "1px solid rgba(255,255,255,0.1)",
+    border: "1px solid rgba(255,255,255,0.1)",
     lineHeight: "1.7",
     boxSizing: "border-box",
     textAlign: "left",
@@ -2840,8 +2658,7 @@ const styles = {
   reviewText: {
     fontSize: "15px",
     color: "#F8FAFC",
-    margin:
-      "0 0 14px",
+    margin: "0 0 14px",
   },
 
   reviewAuthor: {
@@ -2859,8 +2676,7 @@ const styles = {
     backgroundColor: "#0B1120",
     color: "#F8FAFC",
     textAlign: "center",
-    padding:
-      "clamp(50px, 8vw, 80px) 20px",
+    padding: "clamp(50px, 8vw, 80px) 20px",
     boxSizing: "border-box",
     position: "relative",
     zIndex: 1,
@@ -2869,17 +2685,14 @@ const styles = {
   ctaTitle: {
     fontFamily: DISPLAY,
     textTransform: "uppercase",
-    fontSize:
-      "clamp(26px, 5vw, 45px)",
-    margin:
-      "0 0 20px",
+    fontSize: "clamp(26px, 5vw, 45px)",
+    margin: "0 0 20px",
     fontWeight: "600",
   },
 
   ctaText: {
     color: "#94A3B8",
-    fontSize:
-      "clamp(14px, 2vw, 18px)",
+    fontSize: "clamp(14px, 2vw, 18px)",
     marginBottom: "30px",
     lineHeight: "1.6",
   },
@@ -2888,15 +2701,13 @@ const styles = {
     display: "inline-block",
     background: ACCENT_GRADIENT,
     color: "#FFFFFF",
-    padding:
-      "15px 35px",
+    padding: "15px 35px",
     borderRadius: "8px",
     textDecoration: "none",
     fontFamily: MONO,
     fontWeight: "600",
     fontSize: "14px",
-    boxShadow:
-      "0 4px 15px rgba(6,182,212,0.25)",
+    boxShadow: "0 4px 15px rgba(6,182,212,0.25)",
   },
 
   // =====================================================
@@ -2908,13 +2719,11 @@ const styles = {
     backgroundColor: "#080C14",
     color: "#64748B",
     textAlign: "center",
-    padding:
-      "25px 20px",
+    padding: "25px 20px",
     fontFamily: MONO,
     fontSize: "13px",
     boxSizing: "border-box",
-    borderTop:
-      "1px solid rgba(255,255,255,0.1)",
+    borderTop: "1px solid rgba(255,255,255,0.1)",
     position: "relative",
     zIndex: 1,
   },
