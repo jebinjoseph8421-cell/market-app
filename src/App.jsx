@@ -3,9 +3,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 // =====================================================
-// REVEAL — scroll-triggered fade/rise wrapper.
-// Purely presentational: observes itself, flips a class
-// once it enters the viewport, then stops watching.
+// REVEAL — scroll-triggered fade/rise wrapper
 // =====================================================
 function Reveal({
   children,
@@ -22,6 +20,7 @@ function Reveal({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -29,9 +28,11 @@ function Reveal({
           observer.unobserve(el);
         }
       },
-      { threshold: 0.15 },
+      { threshold: 0.15 }
     );
+
     observer.observe(el);
+
     return () => observer.disconnect();
   }, []);
 
@@ -53,13 +54,14 @@ function App() {
 
   const navigate = useNavigate();
 
-  // ==============================
-  // GET ALL PRODUCTS  (unchanged endpoint)
-  // ==============================
+  // =====================================================
+  // GET ALL PRODUCTS
+  // =====================================================
+
   const getProducts = async () => {
     try {
       const response = await axios.get(
-        "https://market-backend-2-xcn9.onrender.com/api/products/all",
+        "https://market-backend-2-xcn9.onrender.com/api/products/all"
       );
 
       console.log("Products:", response.data);
@@ -72,21 +74,22 @@ function App() {
     }
   };
 
-  // Load products when Home Page opens
   useEffect(() => {
     getProducts();
   }, []);
 
-  // ==============================
-  // VIEW PRODUCT DETAILS  (unchanged route)
-  // ==============================
+  // =====================================================
+  // VIEW PRODUCT DETAILS
+  // =====================================================
+
   const viewDetails = (id) => {
     navigate(`/view/${id}`);
   };
 
-  // ==============================
-  // PRODUCT CATEGORIES (unchanged list)
-  // ==============================
+  // =====================================================
+  // PRODUCT CATEGORIES
+  // =====================================================
+
   const categories = [
     "Electrical",
     "Electronics",
@@ -97,18 +100,18 @@ function App() {
     "Fashion",
   ];
 
-  // categories that actually have stock, used only for the index-tab strip
   const activeCategories = categories.filter((category) =>
     products.some(
       (product) =>
         product.category?.toLowerCase().trim() ===
-        category.toLowerCase().trim(),
-    ),
+        category.toLowerCase().trim()
+    )
   );
 
-  // ==============================
-  // HERO BANNER SLIDES (rotates automatically, purely presentational)
-  // ==============================
+  // =====================================================
+  // HERO SLIDES
+  // =====================================================
+
   const heroSlides = [
     {
       eyebrow: "ISSUE NO. 07 — GENERAL CATALOG",
@@ -148,40 +151,68 @@ function App() {
 
   const activeSlide = heroSlides[currentSlide];
 
-  // ==============================
-  // EXTRA (presentational-only) STATE
-  // Scroll progress bar + hero parallax tilt.
-  // None of this touches data, routes, or endpoints above.
-  // ==============================
+  // =====================================================
+  // SCROLL PROGRESS
+  // =====================================================
+
   const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
+
       const docHeight =
         document.documentElement.scrollHeight - window.innerHeight;
-      setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+
+      setScrollProgress(
+        docHeight > 0 ? (scrollTop / docHeight) * 100 : 0
+      );
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
     handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () =>
+      window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  // =====================================================
+  // HERO TILT
+  // =====================================================
+
+  const [tilt, setTilt] = useState({
+    x: 0,
+    y: 0,
+  });
 
   const handleHeroMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const px = (e.clientX - rect.left) / rect.width - 0.5;
-    const py = (e.clientY - rect.top) / rect.height - 0.5;
-    setTilt({ x: px * 14, y: py * -14 });
+
+    const px =
+      (e.clientX - rect.left) / rect.width - 0.5;
+
+    const py =
+      (e.clientY - rect.top) / rect.height - 0.5;
+
+    setTilt({
+      x: px * 14,
+      y: py * -14,
+    });
   };
 
-  const handleHeroMouseLeave = () => setTilt({ x: 0, y: 0 });
+  const handleHeroMouseLeave = () =>
+    setTilt({
+      x: 0,
+      y: 0,
+    });
 
   return (
     <div style={styles.page}>
-      {/* Same type system as the All Products page: display + workhorse
-          body + a mono face reserved for stamped-price / label text */}
+      {/* GOOGLE FONTS */}
+
       <link
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap"
@@ -189,22 +220,31 @@ function App() {
 
       <style>{globalAnimations}</style>
 
-      {/* AMBIENT LIGHT MESH — matches the All Products page glow */}
+      {/* AMBIENT LIGHT */}
+
       <div style={styles.ambientOrb1}></div>
+
       <div style={styles.ambientOrb2}></div>
 
-      {/* SCROLL PROGRESS BAR */}
+      {/* SCROLL PROGRESS */}
+
       <div style={styles.progressTrack}>
         <div
-          style={{ ...styles.progressFill, width: `${scrollProgress}%` }}
+          style={{
+            ...styles.progressFill,
+            width: `${scrollProgress}%`,
+          }}
         ></div>
       </div>
 
-      {/* ===================================== */}
-      {/* HERO SECTION */}
-      {/* ===================================== */}
+      {/* =====================================================
+          HERO
+      ===================================================== */}
 
-      <section style={styles.hero} className="hero-glow">
+      <section
+        style={styles.hero}
+        className="hero-glow"
+      >
         <div style={styles.heroContent}>
           <p
             key={`eyebrow-${currentSlide}`}
@@ -222,7 +262,10 @@ function App() {
             {activeSlide.title.map((line, i) => (
               <React.Fragment key={i}>
                 {line}
-                {i < activeSlide.title.length - 1 && <br />}
+
+                {i < activeSlide.title.length - 1 && (
+                  <br />
+                )}
               </React.Fragment>
             ))}
           </h1>
@@ -238,17 +281,26 @@ function App() {
           </p>
 
           <div style={styles.heroButtons}>
-            <Link to="/all" style={styles.shopButton} className="btn-shine">
+            <Link
+              to="/all"
+              style={styles.shopButton}
+              className="btn-shine"
+            >
               Shop Now →
             </Link>
 
-            <Link to="/add" style={styles.addButton} className="btn-outline">
+            <Link
+              to="/add"
+              style={styles.addButton}
+              className="btn-outline"
+            >
               Add Product
             </Link>
           </div>
         </div>
 
-        {/* HERO IMAGE — auto-rotating banner with mouse-tilt parallax */}
+        {/* HERO IMAGE */}
+
         <div
           style={styles.heroImageWrap}
           onMouseMove={handleHeroMouseMove}
@@ -266,21 +318,36 @@ function App() {
                 style={{
                   ...styles.heroSlideImg,
                   backgroundImage: `url('${slide.image}')`,
-                  opacity: i === currentSlide ? 1 : 0,
-                  transform: i === currentSlide ? "scale(1)" : "scale(1.08)",
+                  opacity:
+                    i === currentSlide ? 1 : 0,
+                  transform:
+                    i === currentSlide
+                      ? "scale(1)"
+                      : "scale(1.08)",
                 }}
               ></div>
             ))}
-            <div style={styles.heroSheen} className="hero-sheen"></div>
+
+            <div
+              style={styles.heroSheen}
+              className="hero-sheen"
+            ></div>
           </div>
 
-          <div style={styles.heroStamp} className="stamp-float">
-            <span key={`stamp-${currentSlide}`} style={styles.heroStampText}>
+          <div
+            style={styles.heroStamp}
+            className="stamp-float"
+          >
+            <span
+              key={`stamp-${currentSlide}`}
+              style={styles.heroStampText}
+            >
               {activeSlide.stamp}
             </span>
           </div>
 
-          {/* DOT NAVIGATION with per-slide progress fill */}
+          {/* DOT NAVIGATION */}
+
           <div style={styles.heroDots}>
             {heroSlides.map((_, i) => (
               <button
@@ -289,71 +356,109 @@ function App() {
                 aria-label={`Show slide ${i + 1}`}
                 style={{
                   ...styles.heroDot,
-                  ...(i === currentSlide ? styles.heroDotActive : {}),
+                  ...(i === currentSlide
+                    ? styles.heroDotActive
+                    : {}),
                 }}
-                className={i === currentSlide ? "dot-active" : ""}
+                className={
+                  i === currentSlide
+                    ? "dot-active"
+                    : ""
+                }
               ></button>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ===================================== */}
-      {/* OFFER SECTION */}
-      {/* ===================================== */}
+      {/* =====================================================
+          OFFER
+      ===================================================== */}
 
-      <Reveal as="section" style={styles.offer}>
-        <p style={styles.offerLabel}>LIMITED TIME OFFER</p>
-
-        <h2 style={styles.offerTitle}>Get 20% Off Your First Order</h2>
-
-        <p style={styles.offerText}>
-          Start shopping today and enjoy exclusive savings on selected products.
+      <Reveal
+        as="section"
+        style={styles.offer}
+      >
+        <p style={styles.offerLabel}>
+          LIMITED TIME OFFER
         </p>
 
-        <Link to="/all" style={styles.offerButton} className="btn-shine">
+        <h2 style={styles.offerTitle}>
+          Get 20% Off Your First Order
+        </h2>
+
+        <p style={styles.offerText}>
+          Start shopping today and enjoy exclusive
+          savings on selected products.
+        </p>
+
+        <Link
+          to="/all"
+          style={styles.offerButton}
+          className="btn-shine"
+        >
           Explore Offers
         </Link>
       </Reveal>
 
-      {/* ===================================== */}
-      {/* CATEGORY PRODUCTS */}
-      {/* ===================================== */}
+      {/* =====================================================
+          CATEGORY PRODUCTS
+      ===================================================== */}
 
       <section style={styles.categorySection}>
         <Reveal style={styles.sectionHeader}>
-          <p style={styles.sectionLabel}>SHOP BY CATEGORY</p>
-          <h2 style={styles.sectionTitle}>Explore Our Collection</h2>
+          <p style={styles.sectionLabel}>
+            SHOP BY CATEGORY
+          </p>
+
+          <h2 style={styles.sectionTitle}>
+            Explore Our Collection
+          </h2>
+
           <p style={styles.sectionSubtitle}>
-            Find the perfect products from your favorite categories.
+            Find the perfect products from your
+            favorite categories.
           </p>
         </Reveal>
 
-        {/* INDEX TAB STRIP — jumps to a category */}
-        {!loading && activeCategories.length > 0 && (
-          <div style={styles.tabStrip}>
-            {activeCategories.map((category, i) => (
-              <a
-                key={category}
-                href={`#cat-${category}`}
-                style={i % 2 === 0 ? styles.tabDark : styles.tabAccent}
-                className="tab-link"
-              >
-                {category}
-              </a>
-            ))}
-          </div>
-        )}
+        {/* CATEGORY TABS */}
+
+        {!loading &&
+          activeCategories.length > 0 && (
+            <div style={styles.tabStrip}>
+              {activeCategories.map(
+                (category, i) => (
+                  <a
+                    key={category}
+                    href={`#cat-${category}`}
+                    style={
+                      i % 2 === 0
+                        ? styles.tabDark
+                        : styles.tabAccent
+                    }
+                    className="tab-link"
+                  >
+                    {category}
+                  </a>
+                )
+              )}
+            </div>
+          )}
 
         {/* LOADING */}
 
         {loading ? (
-          <h2 style={styles.message} className="pulse-text">
+          <h2
+            style={styles.message}
+            className="pulse-text"
+          >
             Loading products...
           </h2>
         ) : products.length === 0 ? (
           <div style={styles.emptyContainer}>
-            <h2 style={styles.message}>No products available</h2>
+            <h2 style={styles.message}>
+              No products available
+            </h2>
 
             <Link
               to="/add"
@@ -365,11 +470,16 @@ function App() {
           </div>
         ) : (
           categories.map((category) => {
-            const categoryProducts = products.filter(
-              (product) =>
-                product.category?.toLowerCase().trim() ===
-                category.toLowerCase().trim(),
-            );
+            const categoryProducts =
+              products.filter(
+                (product) =>
+                  product.category
+                    ?.toLowerCase()
+                    .trim() ===
+                  category
+                    .toLowerCase()
+                    .trim()
+              );
 
             if (categoryProducts.length === 0) {
               return null;
@@ -383,10 +493,21 @@ function App() {
               >
                 {/* CATEGORY HEADER */}
 
-                <Reveal style={styles.categoryHeader}>
+                <Reveal
+                  style={styles.categoryHeader}
+                >
                   <div>
-                    <p style={styles.categoryLabel}>CATEGORY</p>
-                    <h2 style={styles.categoryTitle}>{category}</h2>
+                    <p
+                      style={styles.categoryLabel}
+                    >
+                      CATEGORY
+                    </p>
+
+                    <h2
+                      style={styles.categoryTitle}
+                    >
+                      {category}
+                    </h2>
                   </div>
 
                   <Link
@@ -398,53 +519,90 @@ function App() {
                   </Link>
                 </Reveal>
 
-                {/* PRODUCTS — glass cards, hanging price tags */}
+                {/* =================================================
+                    PRODUCT GRID
+                    ================================================= */}
 
-                <div style={styles.productGrid}>
-                  {categoryProducts.slice(0, 4).map((product, i) => (
-                    <Reveal
-                      key={product.id}
-                      style={styles.card}
-                      className="product-card"
-                      delay={i * 90}
-                    >
-                      {/* PRODUCT IMAGE */}
+                <div
+                  style={styles.productGrid}
+                  className="product-grid"
+                >
+                  {categoryProducts
+                    .slice(0, 4)
+                    .map((product, i) => (
+                      <Reveal
+                        key={product.id}
+                        style={styles.card}
+                        className="product-card"
+                        delay={i * 90}
+                      >
+                        {/* PRODUCT IMAGE */}
 
-                      <div style={styles.imageContainer}>
-                        <img
-                          src={product.productImg}
-                          alt={product.name}
-                          className="product-image"
-                          onError={(e) => {
-                            e.currentTarget.src =
-                              "https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&w=500&q=80";
-                          }}
-                        />
-                      </div>
-
-                      <div style={styles.dashedLine}></div>
-
-                      {/* PRODUCT DETAILS */}
-
-                      <div style={styles.details}>
-                        <h3 style={styles.productName}>{product.name}</h3>
-
-                        <p style={styles.category}>{product.category}</p>
-
-                        <p style={styles.price}>₹{product.price}</p>
-
-                        {/* VIEW DETAILS */}
-
-                        <button
-                          onClick={() => viewDetails(product.id)}
-                          style={styles.viewButton}
-                          className="view-btn"
+                        <div
+                          style={
+                            styles.imageContainer
+                          }
+                          className="image-container"
                         >
-                          View Details
-                        </button>
-                      </div>
-                    </Reveal>
-                  ))}
+                          <img
+                            src={product.productImg}
+                            alt={product.name}
+                            className="product-image"
+                            onError={(e) => {
+                              e.currentTarget.src =
+                                "https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&w=500&q=80";
+                            }}
+                          />
+                        </div>
+
+                        <div
+                          style={styles.dashedLine}
+                          className="dashed-line"
+                        ></div>
+
+                        {/* PRODUCT DETAILS */}
+
+                        <div
+                          style={styles.details}
+                          className="details"
+                        >
+                          <h3
+                            style={styles.productName}
+                            className="productName"
+                          >
+                            {product.name}
+                          </h3>
+
+                          <p
+                            style={styles.category}
+                            className="category"
+                          >
+                            {product.category}
+                          </p>
+
+                          <p
+                            style={styles.price}
+                            className="price"
+                          >
+                            ₹{product.price}
+                          </p>
+
+                          <button
+                            onClick={() =>
+                              viewDetails(
+                                product.id
+                              )
+                            }
+                            style={
+                              styles.viewButton
+                            }
+                            className="view-btn"
+                          >
+                            View Details
+                          </button>
+                        </div>
+                      </Reveal>
+                    ))}
                 </div>
               </div>
             );
@@ -452,9 +610,9 @@ function App() {
         )}
       </section>
 
-      {/* ===================================== */}
-      {/* FEATURES */}
-      {/* ===================================== */}
+      {/* =====================================================
+          FEATURES
+      ===================================================== */}
 
       <section style={styles.features}>
         {[
@@ -485,23 +643,37 @@ function App() {
             className="feature"
             delay={i * 100}
           >
-            <div style={styles.featureIcon} className="feature-icon">
+            <div
+              style={styles.featureIcon}
+              className="feature-icon"
+            >
               {f.icon}
             </div>
-            <h3 style={styles.featureTitle}>{f.title}</h3>
-            <p style={styles.featureText}>{f.text}</p>
+
+            <h3 style={styles.featureTitle}>
+              {f.title}
+            </h3>
+
+            <p style={styles.featureText}>
+              {f.text}
+            </p>
           </Reveal>
         ))}
       </section>
 
-      {/* ===================================== */}
-      {/* CUSTOMER REVIEWS */}
-      {/* ===================================== */}
+      {/* =====================================================
+          REVIEWS
+      ===================================================== */}
 
       <section style={styles.reviews}>
-        <Reveal style={{}}>
-          <p style={styles.sectionLabel}>CUSTOMER REVIEWS</p>
-          <h2 style={styles.sectionTitle}>What Our Customers Say</h2>
+        <Reveal>
+          <p style={styles.sectionLabel}>
+            CUSTOMER REVIEWS
+          </p>
+
+          <h2 style={styles.sectionTitle}>
+            What Our Customers Say
+          </h2>
         </Reveal>
 
         <div style={styles.reviewGrid}>
@@ -525,104 +697,181 @@ function App() {
               className="review-card"
               delay={i * 120}
             >
-              <div style={styles.stars} className="stars">
+              <div
+                style={styles.stars}
+                className="stars"
+              >
                 ★★★★★
               </div>
-              <p style={styles.reviewText}>{r.text}</p>
-              <strong style={styles.reviewAuthor}>{r.author}</strong>
+
+              <p style={styles.reviewText}>
+                {r.text}
+              </p>
+
+              <strong
+                style={styles.reviewAuthor}
+              >
+                {r.author}
+              </strong>
             </Reveal>
           ))}
         </div>
       </section>
 
-      {/* ===================================== */}
-      {/* FINAL CTA */}
-      {/* ===================================== */}
+      {/* =====================================================
+          FINAL CTA
+      ===================================================== */}
 
-      <Reveal as="section" style={styles.cta} className="cta-glow">
-        <h2 style={styles.ctaTitle}>Ready to Find Your Next Favorite?</h2>
+      <Reveal
+        as="section"
+        style={styles.cta}
+        className="cta-glow"
+      >
+        <h2 style={styles.ctaTitle}>
+          Ready to Find Your Next Favorite?
+        </h2>
 
         <p style={styles.ctaText}>
-          Browse our complete collection and discover something special.
+          Browse our complete collection and
+          discover something special.
         </p>
 
-        <Link to="/all" style={styles.ctaButton} className="btn-shine">
+        <Link
+          to="/all"
+          style={styles.ctaButton}
+          className="btn-shine"
+        >
           Start Shopping →
         </Link>
       </Reveal>
 
-      {/* ===================================== */}
-      {/* FOOTER */}
-      {/* ===================================== */}
+      {/* =====================================================
+          FOOTER
+      ===================================================== */}
 
-      <footer style={styles.footer}>© 2026 Market. All Rights Reserved.</footer>
+      <footer style={styles.footer}>
+        © 2026 Market. All Rights Reserved.
+      </footer>
     </div>
   );
 }
 
 // =====================================================
-// TOKENS — matched to the All Products page palette
+// FONTS
 // =====================================================
-// bg      #080C14  panel  rgba(15,23,42,0.75)  text   #F8FAFC
-// muted   #94A3B8  sky    #38BDF8              emerald #34D399
-// border  rgba(255,255,255,0.1)   gradient  linear-gradient(135deg,#06B6D4,#6366F1)
 
 const DISPLAY = "'Space Grotesk', sans-serif";
 const BODY = "'Plus Jakarta Sans', sans-serif";
 const MONO = "'JetBrains Mono', monospace";
-const ACCENT_GRADIENT = "linear-gradient(135deg, #06B6D4, #6366F1)";
+
+const ACCENT_GRADIENT =
+  "linear-gradient(135deg, #06B6D4, #6366F1)";
 
 // =====================================================
-// GLOBAL ANIMATION LAYER
-// Keyframes + hover/reveal classes. Everything here is
-// additive — no existing endpoint, route, or data logic
-// is touched by any of it.
+// GLOBAL ANIMATIONS
 // =====================================================
+
 const globalAnimations = `
-  * { scroll-behavior: smooth; }
+  * {
+    scroll-behavior: smooth;
+    box-sizing: border-box;
+  }
 
   @keyframes heroFadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  .hero-fade { animation: heroFadeIn 0.7s cubic-bezier(.16,1,.3,1); }
+
+  .hero-fade {
+    animation: heroFadeIn 0.7s cubic-bezier(.16,1,.3,1);
+  }
 
   @keyframes glowPan {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
   }
+
   .hero-glow {
     background-image:
-      radial-gradient(circle at 20% 20%, rgba(99,102,241,0.20), transparent 45%),
-      radial-gradient(circle at 85% 75%, rgba(6,182,212,0.22), transparent 50%);
+      radial-gradient(
+        circle at 20% 20%,
+        rgba(99,102,241,0.20),
+        transparent 45%
+      ),
+      radial-gradient(
+        circle at 85% 75%,
+        rgba(6,182,212,0.22),
+        transparent 50%
+      );
+
     background-size: 200% 200%;
     animation: glowPan 14s ease-in-out infinite;
   }
 
   @keyframes floatOrb {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(50px, -50px) scale(1.1); }
+    0% {
+      transform: translate(0,0) scale(1);
+    }
+
+    100% {
+      transform: translate(50px,-50px) scale(1.1);
+    }
   }
 
   @keyframes sheenSweep {
-    0%   { transform: translateX(-120%) skewX(-15deg); }
-    100% { transform: translateX(220%) skewX(-15deg); }
+    0% {
+      transform: translateX(-120%) skewX(-15deg);
+    }
+
+    100% {
+      transform: translateX(220%) skewX(-15deg);
+    }
   }
+
   .hero-sheen {
     animation: sheenSweep 6s ease-in-out infinite;
   }
 
   @keyframes floatY {
-    0%, 100% { transform: translateY(0px) rotate(-12deg); }
-    50%      { transform: translateY(-10px) rotate(-12deg); }
+    0%,100% {
+      transform: translateY(0px) rotate(-12deg);
+    }
+
+    50% {
+      transform: translateY(-10px) rotate(-12deg);
+    }
   }
-  .stamp-float { animation: floatY 3.2s ease-in-out infinite; }
+
+  .stamp-float {
+    animation: floatY 3.2s ease-in-out infinite;
+  }
 
   @keyframes underlineGrow {
-    from { transform: scaleX(0); }
-    to   { transform: scaleX(1); }
+    from {
+      transform: scaleX(0);
+    }
+
+    to {
+      transform: scaleX(1);
+    }
   }
+
   .title-underline {
     display: block;
     width: 84px;
@@ -630,150 +879,517 @@ const globalAnimations = `
     background: ${ACCENT_GRADIENT};
     margin-bottom: 22px;
     transform-origin: left;
-    animation: underlineGrow 0.9s 0.3s cubic-bezier(.16,1,.3,1) both;
+    animation:
+      underlineGrow
+      0.9s
+      0.3s
+      cubic-bezier(.16,1,.3,1)
+      both;
   }
+
+  /* REVEAL */
 
   .reveal {
     opacity: 0;
     transform: translateY(28px);
-    transition: opacity 0.7s cubic-bezier(.16,1,.3,1),
-                transform 0.7s cubic-bezier(.16,1,.3,1);
+
+    transition:
+      opacity 0.7s cubic-bezier(.16,1,.3,1),
+      transform 0.7s cubic-bezier(.16,1,.3,1);
   }
+
   .reveal.is-visible {
     opacity: 1;
     transform: translateY(0);
   }
 
-  .btn-shine, .btn-outline {
+  /* BUTTONS */
+
+  .btn-shine,
+  .btn-outline {
     position: relative;
     overflow: hidden;
-    transition: transform 0.3s cubic-bezier(.16,1,.3,1), box-shadow 0.3s ease;
+
+    transition:
+      transform 0.3s cubic-bezier(.16,1,.3,1),
+      box-shadow 0.3s ease;
   }
+
   .btn-shine::after {
     content: "";
+
     position: absolute;
-    top: 0; left: -60%;
-    width: 40%; height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.45), transparent);
+
+    top: 0;
+    left: -60%;
+
+    width: 40%;
+    height: 100%;
+
+    background:
+      linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.45),
+        transparent
+      );
+
     transform: skewX(-20deg);
+
     transition: left 0.6s ease;
   }
-  .btn-shine:hover::after { left: 130%; }
-  .btn-shine:hover, .btn-outline:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.45), 0 0 20px rgba(56,189,248,0.2);
-  }
-  .btn-outline:hover { background-color: rgba(255,255,255,0.06); border-color: #38BDF8; }
 
-  .tab-link { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+  .btn-shine:hover::after {
+    left: 130%;
+  }
+
+  .btn-shine:hover,
+  .btn-outline:hover {
+    transform:
+      translateY(-3px)
+      scale(1.03);
+
+    box-shadow:
+      0 12px 24px rgba(0,0,0,0.45),
+      0 0 20px rgba(56,189,248,0.2);
+  }
+
+  .btn-outline:hover {
+    background-color: rgba(255,255,255,0.06);
+    border-color: #38BDF8;
+  }
+
+  /* CATEGORY TABS */
+
+  .tab-link {
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
   .tab-link:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 16px rgba(0,0,0,0.4);
+
+    box-shadow:
+      0 10px 16px rgba(0,0,0,0.4);
   }
 
-  .view-all-link { position: relative; transition: color 0.25s ease; }
+  /* VIEW ALL */
+
+  .view-all-link {
+    position: relative;
+    transition: color 0.25s ease;
+  }
+
   .view-all-link::after {
     content: "";
+
     position: absolute;
-    left: 0; bottom: -3px;
-    width: 0%; height: 2px;
+
+    left: 0;
+    bottom: -3px;
+
+    width: 0%;
+    height: 2px;
+
     background: #38BDF8;
+
     transition: width 0.3s ease;
   }
-  .view-all-link:hover::after { width: 100%; }
+
+  .view-all-link:hover::after {
+    width: 100%;
+  }
+
+  /* PRODUCT CARD */
 
   .product-card {
-    transition: transform 0.45s cubic-bezier(.16,1,.3,1),
-                box-shadow 0.45s cubic-bezier(.16,1,.3,1),
-                border-color 0.45s ease;
+    transition:
+      transform 0.45s cubic-bezier(.16,1,.3,1),
+      box-shadow 0.45s cubic-bezier(.16,1,.3,1),
+      border-color 0.45s ease;
   }
+
   .product-card:hover {
-    transform: translateY(-12px) rotate(-0.6deg);
+    transform:
+      translateY(-12px)
+      rotate(-0.6deg);
+
     border-color: #38BDF8;
-    box-shadow: 0 26px 40px rgba(0,0,0,0.55), 0 0 24px rgba(56,189,248,0.15);
+
+    box-shadow:
+      0 26px 40px rgba(0,0,0,0.55),
+      0 0 24px rgba(56,189,248,0.15);
   }
-  .product-image { transition: transform 0.6s cubic-bezier(.16,1,.3,1); }
-  .product-card:hover .product-image { transform: scale(1.1) rotate(1deg); }
+
+  .product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+
+    transition:
+      transform 0.6s cubic-bezier(.16,1,.3,1);
+  }
+
+  .product-card:hover .product-image {
+    transform:
+      scale(1.1)
+      rotate(1deg);
+  }
+
+  /* VIEW BUTTON */
 
   .view-btn {
     position: relative;
     overflow: hidden;
-    transition: filter 0.3s ease, transform 0.3s ease;
+
+    transition:
+      filter 0.3s ease,
+      transform 0.3s ease;
   }
+
   .view-btn::after {
     content: "";
+
     position: absolute;
-    top: 0; left: -60%;
-    width: 40%; height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+
+    top: 0;
+    left: -60%;
+
+    width: 40%;
+    height: 100%;
+
+    background:
+      linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.4),
+        transparent
+      );
+
     transform: skewX(-20deg);
+
     transition: left 0.5s ease;
   }
-  .view-btn:hover::after { left: 130%; }
-  .view-btn:hover { filter: brightness(1.12); transform: translateY(-2px); }
 
-  .dot-active { animation: dotPulse 1.6s ease-in-out infinite; }
-  @keyframes dotPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(56,189,248,0.55); }
-    50%      { box-shadow: 0 0 0 6px rgba(56,189,248,0); }
+  .view-btn:hover::after {
+    left: 130%;
   }
+
+  .view-btn:hover {
+    filter: brightness(1.12);
+    transform: translateY(-2px);
+  }
+
+  /* DOT */
+
+  .dot-active {
+    animation:
+      dotPulse
+      1.6s
+      ease-in-out
+      infinite;
+  }
+
+  @keyframes dotPulse {
+    0%,100% {
+      box-shadow:
+        0 0 0 0
+        rgba(56,189,248,0.55);
+    }
+
+    50% {
+      box-shadow:
+        0 0 0 6px
+        rgba(56,189,248,0);
+    }
+  }
+
+  /* LOADING */
 
   @keyframes pulseText {
-    0%, 100% { opacity: 0.55; }
-    50%      { opacity: 1; }
-  }
-  .pulse-text { animation: pulseText 1.4s ease-in-out infinite; }
+    0%,100% {
+      opacity: 0.55;
+    }
 
-  .feature { transition: transform 0.3s ease; }
-  .feature:hover { transform: translateY(-6px); }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .pulse-text {
+    animation:
+      pulseText
+      1.4s
+      ease-in-out
+      infinite;
+  }
+
+  /* FEATURES */
+
+  .feature {
+    transition:
+      transform 0.3s ease;
+  }
+
+  .feature:hover {
+    transform: translateY(-6px);
+  }
+
   .feature-icon {
-    transition: transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s ease, background-color 0.4s ease;
-  }
-  .feature:hover .feature-icon {
-    transform: scale(1.15) rotate(10deg);
-    box-shadow: 0 0 0 10px rgba(56,189,248,0.14);
-    background-color: rgba(255,255,255,0.08);
+    transition:
+      transform 0.4s cubic-bezier(.16,1,.3,1),
+      box-shadow 0.4s ease,
+      background-color 0.4s ease;
   }
 
-  .review-card { transition: transform 0.4s cubic-bezier(.16,1,.3,1), box-shadow 0.4s ease, border-color 0.4s ease; }
+  .feature:hover .feature-icon {
+    transform:
+      scale(1.15)
+      rotate(10deg);
+
+    box-shadow:
+      0 0 0 10px
+      rgba(56,189,248,0.14);
+
+    background-color:
+      rgba(255,255,255,0.08);
+  }
+
+  /* REVIEWS */
+
+  .review-card {
+    transition:
+      transform 0.4s cubic-bezier(.16,1,.3,1),
+      box-shadow 0.4s ease,
+      border-color 0.4s ease;
+  }
+
   .review-card:hover {
-    transform: translateY(-8px) scale(1.015);
+    transform:
+      translateY(-8px)
+      scale(1.015);
+
     border-color: #38BDF8;
-    box-shadow: 0 22px 32px rgba(0,0,0,0.45), 0 0 20px rgba(56,189,248,0.12);
+
+    box-shadow:
+      0 22px 32px rgba(0,0,0,0.45),
+      0 0 20px rgba(56,189,248,0.12);
   }
-  .stars { display: inline-block; transition: transform 0.4s ease; }
-  .review-card:hover .stars { animation: starWiggle 0.5s ease; }
+
+  .stars {
+    display: inline-block;
+    transition:
+      transform 0.4s ease;
+  }
+
+  .review-card:hover .stars {
+    animation:
+      starWiggle
+      0.5s
+      ease;
+  }
+
   @keyframes starWiggle {
-    0%, 100% { transform: scale(1) rotate(0deg); }
-    30% { transform: scale(1.15) rotate(-4deg); }
-    60% { transform: scale(1.15) rotate(4deg); }
+    0%,100% {
+      transform:
+        scale(1)
+        rotate(0deg);
+    }
+
+    30% {
+      transform:
+        scale(1.15)
+        rotate(-4deg);
+    }
+
+    60% {
+      transform:
+        scale(1.15)
+        rotate(4deg);
+    }
   }
+
+  /* CTA */
 
   @keyframes ctaGlow {
-    0%, 100% { box-shadow: inset 0 0 80px rgba(56,189,248,0.10); }
-    50%      { box-shadow: inset 0 0 140px rgba(99,102,241,0.20); }
+    0%,100% {
+      box-shadow:
+        inset 0 0 80px
+        rgba(56,189,248,0.10);
+    }
+
+    50% {
+      box-shadow:
+        inset 0 0 140px
+        rgba(99,102,241,0.20);
+    }
   }
-  .cta-glow { animation: ctaGlow 4s ease-in-out infinite; }
+
+  .cta-glow {
+    animation:
+      ctaGlow
+      4s
+      ease-in-out
+      infinite;
+  }
+
+  /* =====================================================
+     MOBILE
+     4 PRODUCTS IN ONE ROW
+     ===================================================== */
+
+  @media (max-width: 600px) {
+
+    .product-grid {
+      grid-template-columns:
+        repeat(4, minmax(0, 1fr)) !important;
+
+      gap: 5px !important;
+
+      width: 100% !important;
+    }
+
+    .product-card {
+      width: 100% !important;
+      min-width: 0 !important;
+      height: auto !important;
+
+      border-radius: 6px !important;
+    }
+
+    .image-container {
+      height: 75px !important;
+
+      border-radius:
+        6px 6px 0 0 !important;
+    }
+
+    .product-card .details {
+      padding: 6px !important;
+    }
+
+    .product-card .productName {
+      font-size: 9px !important;
+      line-height: 11px !important;
+
+      min-height: 22px !important;
+
+      margin-bottom: 3px !important;
+    }
+
+    .product-card .category {
+      font-size: 7px !important;
+
+      margin-bottom: 4px !important;
+    }
+
+    .product-card .price {
+      font-size: 10px !important;
+
+      margin-bottom: 6px !important;
+    }
+
+    .product-card .view-btn {
+      font-size: 7px !important;
+
+      padding: 5px 2px !important;
+
+      border-radius: 4px !important;
+    }
+
+    .product-card .dashed-line {
+      margin: 0 5px !important;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px) !important;
+    }
+
+    /* Smaller category spacing */
+
+    .category-container {
+      margin-bottom: 45px !important;
+    }
+  }
+
+  /* =====================================================
+     VERY SMALL PHONES
+     ===================================================== */
+
+  @media (max-width: 380px) {
+
+    .product-grid {
+      gap: 3px !important;
+    }
+
+    .product-card {
+      border-radius: 5px !important;
+    }
+
+    .image-container {
+      height: 62px !important;
+    }
+
+    .product-card .details {
+      padding: 4px !important;
+    }
+
+    .product-card .productName {
+      font-size: 8px !important;
+      line-height: 10px !important;
+    }
+
+    .product-card .category {
+      font-size: 6px !important;
+    }
+
+    .product-card .price {
+      font-size: 9px !important;
+    }
+
+    .product-card .view-btn {
+      font-size: 6px !important;
+      padding: 4px 1px !important;
+    }
+  }
+
+  /* REDUCED MOTION */
 
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.001ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.001ms !important;
-      scroll-behavior: auto !important;
+
+    *,
+    *::before,
+    *::after {
+      animation-duration:
+        0.001ms !important;
+
+      animation-iteration-count:
+        1 !important;
+
+      transition-duration:
+        0.001ms !important;
+
+      scroll-behavior:
+        auto !important;
     }
-    .reveal { opacity: 1; transform: none; }
+
+    .reveal {
+      opacity: 1;
+      transform: none;
+    }
   }
 `;
 
 // =====================================================
-// RESPONSIVE STYLES
+// STYLES
 // =====================================================
 
 const styles = {
-  // =====================================
-  // MAIN PAGE
-  // =====================================
+  // =====================================================
+  // PAGE
+  // =====================================================
 
   page: {
     minHeight: "100vh",
@@ -786,9 +1402,9 @@ const styles = {
     position: "relative",
   },
 
-  // =====================================
-  // AMBIENT LIGHT MESH
-  // =====================================
+  // =====================================================
+  // AMBIENT
+  // =====================================================
 
   ambientOrb1: {
     position: "fixed",
@@ -798,9 +1414,10 @@ const styles = {
     height: "650px",
     borderRadius: "50%",
     background:
-      "radial-gradient(circle, rgba(99, 102, 241, 0.14) 0%, transparent 70%)",
+      "radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 70%)",
     filter: "blur(80px)",
-    animation: "floatOrb 20s ease-in-out infinite alternate",
+    animation:
+      "floatOrb 20s ease-in-out infinite alternate",
     pointerEvents: "none",
     zIndex: 0,
   },
@@ -813,16 +1430,17 @@ const styles = {
     height: "700px",
     borderRadius: "50%",
     background:
-      "radial-gradient(circle, rgba(6, 182, 212, 0.13) 0%, transparent 70%)",
+      "radial-gradient(circle, rgba(6,182,212,0.13) 0%, transparent 70%)",
     filter: "blur(90px)",
-    animation: "floatOrb 24s ease-in-out infinite alternate-reverse",
+    animation:
+      "floatOrb 24s ease-in-out infinite alternate-reverse",
     pointerEvents: "none",
     zIndex: 0,
   },
 
-  // =====================================
-  // SCROLL PROGRESS BAR
-  // =====================================
+  // =====================================================
+  // PROGRESS
+  // =====================================================
 
   progressTrack: {
     position: "fixed",
@@ -838,12 +1456,13 @@ const styles = {
     height: "100%",
     background: ACCENT_GRADIENT,
     transition: "width 0.1s linear",
-    boxShadow: "0 0 8px rgba(56,189,248,0.7)",
+    boxShadow:
+      "0 0 8px rgba(56,189,248,0.7)",
   },
 
-  // =====================================
+  // =====================================================
   // HERO
-  // =====================================
+  // =====================================================
 
   hero: {
     minHeight: "80vh",
@@ -854,7 +1473,8 @@ const styles = {
     alignItems: "center",
     justifyContent: "space-between",
 
-    padding: "clamp(40px, 7vw, 80px) clamp(20px, 8vw, 120px)",
+    padding:
+      "clamp(40px, 7vw, 80px) clamp(20px, 8vw, 120px)",
 
     gap: "clamp(40px, 6vw, 80px)",
 
@@ -876,8 +1496,10 @@ const styles = {
 
   welcome: {
     fontFamily: MONO,
-    letterSpacing: "clamp(1px, 0.3vw, 2px)",
-    fontSize: "clamp(11px, 1.5vw, 13px)",
+    letterSpacing:
+      "clamp(1px, 0.3vw, 2px)",
+    fontSize:
+      "clamp(11px, 1.5vw, 13px)",
     color: "#38BDF8",
     marginBottom: "22px",
   },
@@ -885,19 +1507,24 @@ const styles = {
   heroTitle: {
     fontFamily: DISPLAY,
     textTransform: "uppercase",
-    fontSize: "clamp(46px, 7.5vw, 68px)",
+    fontSize:
+      "clamp(46px, 7.5vw, 68px)",
     lineHeight: "1.05",
     margin: "0 0 25px",
     fontWeight: "700",
     letterSpacing: "-0.5px",
-    backgroundImage: "linear-gradient(135deg, #FFFFFF 30%, #94A3B8 100%)",
+
+    backgroundImage:
+      "linear-gradient(135deg, #FFFFFF 30%, #94A3B8 100%)",
+
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
     backgroundClip: "text",
   },
 
   heroText: {
-    fontSize: "clamp(15px, 2vw, 18px)",
+    fontSize:
+      "clamp(15px, 2vw, 18px)",
     lineHeight: "1.7",
     color: "#94A3B8",
     marginBottom: "35px",
@@ -922,12 +1549,14 @@ const styles = {
     fontSize: "14px",
     letterSpacing: "0.5px",
     textAlign: "center",
-    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
+    boxShadow:
+      "0 4px 15px rgba(6,182,212,0.25)",
   },
 
   addButton: {
     display: "inline-block",
-    border: "1px solid rgba(255,255,255,0.15)",
+    border:
+      "1px solid rgba(255,255,255,0.15)",
     color: "#F8FAFC",
     padding: "15px 30px",
     textDecoration: "none",
@@ -950,14 +1579,18 @@ const styles = {
   heroFrame: {
     position: "relative",
     width: "100%",
-    height: "clamp(300px, 50vw, 500px)",
+    height:
+      "clamp(300px, 50vw, 500px)",
     borderRadius: "12px",
     overflow: "hidden",
-    boxShadow: "14px 14px 0px rgba(99,102,241,0.35)",
+    boxShadow:
+      "14px 14px 0px rgba(99,102,241,0.35)",
     marginRight: "14px",
     boxSizing: "border-box",
-    transition: "transform 0.2s ease-out",
-    border: "1px solid rgba(255,255,255,0.1)",
+    transition:
+      "transform 0.2s ease-out",
+    border:
+      "1px solid rgba(255,255,255,0.1)",
   },
 
   heroSlideImg: {
@@ -967,7 +1600,8 @@ const styles = {
     height: "100%",
     backgroundSize: "cover",
     backgroundPosition: "center",
-    transition: "opacity 1s ease, transform 1.2s ease",
+    transition:
+      "opacity 1s ease, transform 1.2s ease",
   },
 
   heroSheen: {
@@ -990,11 +1624,13 @@ const styles = {
     width: "8px",
     height: "8px",
     borderRadius: "50%",
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor:
+      "rgba(255,255,255,0.2)",
     border: "none",
     padding: 0,
     cursor: "pointer",
-    transition: "width 0.25s ease, background-color 0.25s ease",
+    transition:
+      "width 0.25s ease, background-color 0.25s ease",
   },
 
   heroDotActive: {
@@ -1011,7 +1647,8 @@ const styles = {
     height: "84px",
     borderRadius: "50%",
     border: "2px dashed #38BDF8",
-    backgroundColor: "rgba(15,23,42,0.9)",
+    backgroundColor:
+      "rgba(15,23,42,0.9)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -1031,17 +1668,26 @@ const styles = {
     padding: "0 8px",
   },
 
-  // =====================================
+  // =====================================================
   // OFFER
-  // =====================================
+  // =====================================================
 
   offer: {
-    padding: "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
-    backgroundColor: "rgba(15, 23, 42, 0.75)",
+    padding:
+      "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
+
+    backgroundColor:
+      "rgba(15,23,42,0.75)",
+
     backdropFilter: "blur(20px)",
     WebkitBackdropFilter: "blur(20px)",
-    borderTop: "1px solid rgba(255,255,255,0.1)",
-    borderBottom: "1px solid rgba(255,255,255,0.1)",
+
+    borderTop:
+      "1px solid rgba(255,255,255,0.1)",
+
+    borderBottom:
+      "1px solid rgba(255,255,255,0.1)",
+
     textAlign: "center",
     boxSizing: "border-box",
     position: "relative",
@@ -1059,7 +1705,8 @@ const styles = {
   offerTitle: {
     fontFamily: DISPLAY,
     textTransform: "uppercase",
-    fontSize: "clamp(28px, 5vw, 40px)",
+    fontSize:
+      "clamp(28px, 5vw, 40px)",
     margin: "15px 0",
     fontWeight: "600",
     color: "#F8FAFC",
@@ -1067,7 +1714,8 @@ const styles = {
 
   offerText: {
     color: "#94A3B8",
-    fontSize: "clamp(15px, 2vw, 17px)",
+    fontSize:
+      "clamp(15px, 2vw, 17px)",
     marginBottom: "30px",
     lineHeight: "1.6",
   },
@@ -1082,16 +1730,20 @@ const styles = {
     fontFamily: MONO,
     fontWeight: "600",
     fontSize: "14px",
-    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
+    boxShadow:
+      "0 4px 15px rgba(6,182,212,0.25)",
   },
 
-  // =====================================
+  // =====================================================
   // CATEGORY SECTION
-  // =====================================
+  // =====================================================
 
   categorySection: {
-    padding: "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
+    padding:
+      "clamp(50px, 8vw, 80px) clamp(10px, 8vw, 100px)",
+
     backgroundColor: "#080C14",
+
     boxSizing: "border-box",
     position: "relative",
     zIndex: 1,
@@ -1099,7 +1751,8 @@ const styles = {
 
   sectionHeader: {
     textAlign: "center",
-    marginBottom: "clamp(30px, 5vw, 45px)",
+    marginBottom:
+      "clamp(30px, 5vw, 45px)",
   },
 
   sectionLabel: {
@@ -1113,7 +1766,8 @@ const styles = {
   sectionTitle: {
     fontFamily: DISPLAY,
     textTransform: "uppercase",
-    fontSize: "clamp(28px, 5vw, 40px)",
+    fontSize:
+      "clamp(28px, 5vw, 40px)",
     margin: "15px 0",
     fontWeight: "600",
     color: "#F8FAFC",
@@ -1121,11 +1775,14 @@ const styles = {
 
   sectionSubtitle: {
     color: "#94A3B8",
-    fontSize: "clamp(15px, 2vw, 17px)",
+    fontSize:
+      "clamp(15px, 2vw, 17px)",
     lineHeight: "1.6",
   },
 
-  // INDEX TAB STRIP
+  // =====================================================
+  // CATEGORY TABS
+  // =====================================================
 
   tabStrip: {
     display: "flex",
@@ -1133,7 +1790,8 @@ const styles = {
     justifyContent: "center",
     gap: "8px",
     maxWidth: "1200px",
-    margin: "0 auto clamp(35px, 5vw, 55px)",
+    margin:
+      "0 auto clamp(35px, 5vw, 55px)",
   },
 
   tabDark: {
@@ -1146,9 +1804,11 @@ const styles = {
     textDecoration: "none",
     textTransform: "uppercase",
     display: "inline-block",
-    backgroundColor: "rgba(15, 23, 42, 0.75)",
+    backgroundColor:
+      "rgba(15,23,42,0.75)",
     color: "#F8FAFC",
-    border: "1px solid rgba(255,255,255,0.1)",
+    border:
+      "1px solid rgba(255,255,255,0.1)",
     borderBottom: "none",
   },
 
@@ -1166,9 +1826,9 @@ const styles = {
     color: "#FFFFFF",
   },
 
-  // =====================================
+  // =====================================================
   // CATEGORY
-  // =====================================
+  // =====================================================
 
   categoryContainer: {
     width: "100%",
@@ -1183,7 +1843,8 @@ const styles = {
     alignItems: "center",
     gap: "20px",
     marginBottom: "25px",
-    borderBottom: "2px solid rgba(255,255,255,0.1)",
+    borderBottom:
+      "2px solid rgba(255,255,255,0.1)",
     paddingBottom: "15px",
     flexWrap: "wrap",
   },
@@ -1200,7 +1861,8 @@ const styles = {
   categoryTitle: {
     fontFamily: DISPLAY,
     textTransform: "uppercase",
-    fontSize: "clamp(22px, 4vw, 28px)",
+    fontSize:
+      "clamp(22px, 4vw, 28px)",
     margin: "0",
     fontWeight: "600",
     color: "#F8FAFC",
@@ -1216,44 +1878,79 @@ const styles = {
     display: "inline-block",
   },
 
+  // =====================================================
+  // PRODUCT GRID
+  // =====================================================
+
   productGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(250px, 250px))",
+
+    gridTemplateColumns:
+      "repeat(4, minmax(0, 1fr))",
+
     gap: "30px",
+
+    width: "100%",
     maxWidth: "1200px",
+
     margin: "0 auto",
-    justifyContent: "start",
+
+    justifyContent: "center",
     alignItems: "start",
   },
 
+  // =====================================================
+  // PRODUCT CARD
+  // =====================================================
+
   card: {
-    backgroundColor: "rgba(15, 23, 42, 0.75)",
+    backgroundColor:
+      "rgba(15,23,42,0.75)",
+
     backdropFilter: "blur(20px)",
     WebkitBackdropFilter: "blur(20px)",
+
     borderRadius: "12px",
     overflow: "hidden",
-    border: "1px solid rgba(255,255,255,0.1)",
-    boxShadow: "0 14px 30px rgba(0, 0, 0, 0.4)",
+
+    border:
+      "1px solid rgba(255,255,255,0.1)",
+
+    boxShadow:
+      "0 14px 30px rgba(0,0,0,0.4)",
 
     display: "flex",
     flexDirection: "column",
 
-    width: "250px",
+    width: "100%",
+    minWidth: 0,
+
     height: "400px",
 
     boxSizing: "border-box",
   },
 
+  // =====================================================
+  // PRODUCT IMAGE
+  // =====================================================
+
   imageContainer: {
     width: "100%",
     height: "200px",
-    backgroundColor: "rgb(250, 251, 255)",
+
+    backgroundColor:
+      "rgb(250,251,255)",
+
     overflow: "hidden",
+
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+
     flexShrink: 0,
-    borderRadius: "12px 12px 0 0",
+
+    borderRadius:
+      "12px 12px 0 0",
   },
 
   image: {
@@ -1264,30 +1961,40 @@ const styles = {
   },
 
   dashedLine: {
-    borderTop: "1px dashed rgba(255,255,255,0.1)",
+    borderTop:
+      "1px dashed rgba(255,255,255,0.1)",
+
     margin: "0 16px",
   },
 
-  // =====================================
+  // =====================================================
   // DETAILS
-  // =====================================
+  // =====================================================
 
   details: {
     padding: "16px 20px 20px",
+
     display: "flex",
     flexDirection: "column",
+
     flex: "1",
   },
 
   productName: {
     margin: "0 0 8px",
+
     fontSize: "18px",
     lineHeight: "22px",
+
     minHeight: "44px",
+
     fontWeight: "600",
     color: "#F8FAFC",
+
     wordBreak: "break-word",
+
     overflow: "hidden",
+
     display: "-webkit-box",
     WebkitLineClamp: 2,
     WebkitBoxOrient: "vertical",
@@ -1295,44 +2002,66 @@ const styles = {
 
   category: {
     fontFamily: MONO,
+
     margin: "0 0 12px",
+
     fontSize: "12px",
+
     letterSpacing: "0.5px",
+
     textTransform: "uppercase",
+
     color: "#34D399",
   },
 
   price: {
     fontFamily: MONO,
+
     margin: "0 0 18px",
+
     fontSize: "22px",
+
     fontWeight: "600",
+
     color: "#38BDF8",
   },
 
-  // =====================================
+  // =====================================================
   // VIEW BUTTON
-  // =====================================
+  // =====================================================
 
   viewButton: {
     width: "100%",
+
     padding: "12px",
+
     background: ACCENT_GRADIENT,
+
     color: "#FFFFFF",
+
     border: "none",
+
     borderRadius: "6px",
+
     fontFamily: MONO,
+
     fontSize: "13px",
+
     fontWeight: "600",
+
     letterSpacing: "0.3px",
+
     cursor: "pointer",
+
     marginTop: "auto",
-    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
+
+    boxShadow:
+      "0 4px 15px rgba(6,182,212,0.25)",
   },
 
-  // =====================================
+  // =====================================================
   // EMPTY
-  // =====================================
+  // =====================================================
 
   emptyContainer: {
     textAlign: "center",
@@ -1355,30 +2084,38 @@ const styles = {
     textDecoration: "none",
     fontFamily: MONO,
     fontWeight: "600",
-    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
+    boxShadow:
+      "0 4px 15px rgba(6,182,212,0.25)",
   },
 
-  // =====================================
+  // =====================================================
   // FEATURES
-  // =====================================
+  // =====================================================
 
   features: {
-    padding: "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
+    padding:
+      "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
 
     display: "grid",
 
-    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
+    gridTemplateColumns:
+      "repeat(auto-fit, minmax(min(100%,220px),1fr))",
 
     gap: "30px",
 
     textAlign: "center",
 
-    backgroundColor: "rgba(15, 23, 42, 0.75)",
+    backgroundColor:
+      "rgba(15,23,42,0.75)",
+
     backdropFilter: "blur(20px)",
     WebkitBackdropFilter: "blur(20px)",
-    borderTop: "1px solid rgba(255,255,255,0.1)",
+
+    borderTop:
+      "1px solid rgba(255,255,255,0.1)",
 
     boxSizing: "border-box",
+
     position: "relative",
     zIndex: 1,
   },
@@ -1389,144 +2126,220 @@ const styles = {
 
   featureIcon: {
     fontSize: "30px",
+
     width: "62px",
     height: "62px",
+
     lineHeight: "62px",
+
     margin: "0 auto 14px",
+
     borderRadius: "50%",
-    border: "1px dashed #38BDF8",
-    backgroundColor: "rgba(255,255,255,0.05)",
+
+    border:
+      "1px dashed #38BDF8",
+
+    backgroundColor:
+      "rgba(255,255,255,0.05)",
   },
 
   featureTitle: {
     fontFamily: DISPLAY,
+
     textTransform: "uppercase",
+
     fontWeight: "600",
+
     letterSpacing: "0.3px",
+
     margin: "0 0 8px",
+
     color: "#F8FAFC",
   },
 
   featureText: {
     color: "#94A3B8",
+
     fontSize: "14px",
+
     lineHeight: "1.6",
+
     margin: 0,
   },
 
-  // =====================================
+  // =====================================================
   // REVIEWS
-  // =====================================
+  // =====================================================
 
   reviews: {
-    padding: "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
+    padding:
+      "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
+
     backgroundColor: "#080C14",
+
     textAlign: "center",
+
     boxSizing: "border-box",
+
     position: "relative",
+
     zIndex: 1,
   },
 
   reviewGrid: {
     display: "grid",
 
-    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 250px), 350px))",
+    gridTemplateColumns:
+      "repeat(auto-fit, minmax(min(100%,250px),350px))",
 
     gap: "25px",
 
     justifyContent: "center",
 
     width: "100%",
+
     marginTop: "10px",
   },
 
   reviewCard: {
     width: "100%",
-    backgroundColor: "rgba(15, 23, 42, 0.75)",
+
+    backgroundColor:
+      "rgba(15,23,42,0.75)",
+
     backdropFilter: "blur(20px)",
     WebkitBackdropFilter: "blur(20px)",
+
     padding: "30px",
+
     borderRadius: "12px",
-    border: "1px solid rgba(255,255,255,0.1)",
+
+    border:
+      "1px solid rgba(255,255,255,0.1)",
+
     lineHeight: "1.7",
+
     boxSizing: "border-box",
+
     textAlign: "left",
   },
 
   stars: {
     color: "#38BDF8",
+
     fontSize: "18px",
+
     marginBottom: "10px",
   },
 
   reviewText: {
     fontSize: "15px",
+
     color: "#F8FAFC",
+
     margin: "0 0 14px",
   },
 
   reviewAuthor: {
     fontFamily: MONO,
+
     fontSize: "13px",
+
     color: "#94A3B8",
   },
 
-  // =====================================
+  // =====================================================
   // CTA
-  // =====================================
+  // =====================================================
 
   cta: {
     backgroundColor: "#0B1120",
+
     color: "#F8FAFC",
+
     textAlign: "center",
-    padding: "clamp(50px, 8vw, 80px) 20px",
+
+    padding:
+      "clamp(50px, 8vw, 80px) 20px",
+
     boxSizing: "border-box",
+
     position: "relative",
+
     zIndex: 1,
   },
 
   ctaTitle: {
     fontFamily: DISPLAY,
+
     textTransform: "uppercase",
-    fontSize: "clamp(28px, 5vw, 45px)",
+
+    fontSize:
+      "clamp(28px,5vw,45px)",
+
     margin: "0 0 20px",
+
     fontWeight: "600",
   },
 
   ctaText: {
     color: "#94A3B8",
-    fontSize: "clamp(15px, 2vw, 18px)",
+
+    fontSize:
+      "clamp(15px,2vw,18px)",
+
     marginBottom: "30px",
+
     lineHeight: "1.6",
   },
 
   ctaButton: {
     display: "inline-block",
+
     background: ACCENT_GRADIENT,
+
     color: "#FFFFFF",
+
     padding: "15px 35px",
+
     borderRadius: "8px",
+
     textDecoration: "none",
+
     fontFamily: MONO,
+
     fontWeight: "600",
+
     fontSize: "14px",
-    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
+
+    boxShadow:
+      "0 4px 15px rgba(6,182,212,0.25)",
   },
 
-  // =====================================
+  // =====================================================
   // FOOTER
-  // =====================================
+  // =====================================================
 
   footer: {
     backgroundColor: "#080C14",
+
     color: "#64748B",
+
     textAlign: "center",
+
     padding: "25px 20px",
+
     fontFamily: MONO,
+
     fontSize: "13px",
+
     boxSizing: "border-box",
-    borderTop: "1px solid rgba(255,255,255,0.1)",
+
+    borderTop:
+      "1px solid rgba(255,255,255,0.1)",
+
     position: "relative",
+
     zIndex: 1,
   },
 };
