@@ -13,10 +13,11 @@ function AllProducts() {
 
   const navigate = useNavigate();
 
-  const BASE_URL = "https://market-backend-2-xcn9.onrender.com/api/products";
+  const BASE_URL =
+    "https://market-backend-2-xcn9.onrender.com/api/products";
 
   // =====================================================
-  // GET ALL PRODUCTS (UNCHANGED)
+  // GET ALL PRODUCTS
   // =====================================================
   const getProducts = async () => {
     try {
@@ -29,7 +30,6 @@ function AllProducts() {
       setProducts(response.data);
     } catch (error) {
       console.error("Error fetching products:", error);
-
       alert("Failed to load products");
     } finally {
       setLoading(false);
@@ -37,21 +37,19 @@ function AllProducts() {
   };
 
   // =====================================================
-  // LOAD PRODUCTS (UNCHANGED)
+  // LOAD PRODUCTS
   // =====================================================
   useEffect(() => {
     getProducts();
   }, []);
 
   // =====================================================
-  // ADD PRODUCT TO CART (UNCHANGED)
+  // ADD PRODUCT TO CART
   // =====================================================
   const addToCart = async (productId) => {
-    // Get logged-in user
     const user = JSON.parse(localStorage.getItem("user"));
     const userId = user?.userId;
 
-    // Check whether user is logged in
     if (!userId) {
       alert("Please login first to add products to cart.");
       navigate("/signin");
@@ -61,12 +59,12 @@ function AllProducts() {
     try {
       setAddingProduct(productId);
 
-      // Send request to Spring Boot
       const response = await axios.post(
-        `${BASE_URL}/cart/${userId}/add/${productId}`,
+        `${BASE_URL}/cart/${userId}/add/${productId}`
       );
 
       console.log("Cart updated:", response.data);
+
       alert("Product added to cart successfully!");
     } catch (error) {
       console.error("Error adding product to cart:", error);
@@ -82,14 +80,14 @@ function AllProducts() {
   };
 
   // =====================================================
-  // SEARCH BUTTON (UNCHANGED)
+  // SEARCH
   // =====================================================
   const handleSearch = () => {
     setSearch(searchInput.trim());
   };
 
   // =====================================================
-  // SEARCH USING ENTER KEY (UNCHANGED)
+  // SEARCH USING ENTER
   // =====================================================
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -98,7 +96,7 @@ function AllProducts() {
   };
 
   // =====================================================
-  // CLEAR SEARCH (UNCHANGED)
+  // CLEAR SEARCH
   // =====================================================
   const clearSearch = () => {
     setSearchInput("");
@@ -106,7 +104,7 @@ function AllProducts() {
   };
 
   // =====================================================
-  // FILTER PRODUCTS (UNCHANGED)
+  // FILTER PRODUCTS
   // =====================================================
   const filteredProducts = products.filter((product) => {
     const productName = product.name?.toLowerCase() || "";
@@ -114,12 +112,13 @@ function AllProducts() {
     const searchText = search.toLowerCase();
 
     return (
-      productName.includes(searchText) || productCategory.includes(searchText)
+      productName.includes(searchText) ||
+      productCategory.includes(searchText)
     );
   });
 
   // =====================================================
-  // VIEW PRODUCT DETAILS (UNCHANGED)
+  // VIEW PRODUCT DETAILS
   // =====================================================
   const viewDetails = (id) => {
     navigate(`/view/${id}`);
@@ -131,10 +130,16 @@ function AllProducts() {
         rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap"
       />
+
       <style>
         {`
           * {
             box-sizing: border-box;
+          }
+
+          body {
+            margin: 0;
+            padding: 0;
           }
 
           .products-page {
@@ -147,7 +152,10 @@ function AllProducts() {
             overflow: hidden;
           }
 
-          /* MATURE AMBIENT LIGHTING MESH */
+          /* =========================================
+             AMBIENT LIGHTING
+          ========================================= */
+
           .ambient-orb-1 {
             position: absolute;
             top: -15%;
@@ -155,7 +163,11 @@ function AllProducts() {
             width: 650px;
             height: 650px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.16) 0%, transparent 70%);
+            background: radial-gradient(
+              circle,
+              rgba(99, 102, 241, 0.16) 0%,
+              transparent 70%
+            );
             filter: blur(80px);
             animation: floatOrb 20s ease-in-out infinite alternate;
             pointer-events: none;
@@ -168,16 +180,29 @@ function AllProducts() {
             width: 700px;
             height: 700px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
+            background: radial-gradient(
+              circle,
+              rgba(6, 182, 212, 0.15) 0%,
+              transparent 70%
+            );
             filter: blur(90px);
             animation: floatOrb 24s ease-in-out infinite alternate-reverse;
             pointer-events: none;
           }
 
           @keyframes floatOrb {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(50px, -50px) scale(1.1); }
+            0% {
+              transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+              transform: translate(50px, -50px) scale(1.1);
+            }
           }
+
+          /* =========================================
+             HEADER
+          ========================================= */
 
           .products-header {
             max-width: 1200px;
@@ -209,7 +234,11 @@ function AllProducts() {
             font-size: 38px;
             font-weight: 700;
             letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #FFFFFF 30%, #94A3B8 100%);
+            background: linear-gradient(
+              135deg,
+              #FFFFFF 30%,
+              #94A3B8 100%
+            );
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
           }
@@ -219,6 +248,10 @@ function AllProducts() {
             font-size: 15px;
             color: #94A3B8;
           }
+
+          /* =========================================
+             SEARCH
+          ========================================= */
 
           .search-container {
             display: flex;
@@ -286,6 +319,10 @@ function AllProducts() {
             color: #F8FAFC;
           }
 
+          /* =========================================
+             RESULT
+          ========================================= */
+
           .result-text {
             max-width: 1200px;
             margin: 22px auto 25px;
@@ -299,7 +336,10 @@ function AllProducts() {
             color: #38BDF8;
           }
 
-          /* PRESERVED GRID ALIGNMENT & SIZING */
+          /* =========================================
+             PRODUCT GRID
+          ========================================= */
+
           .product-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -311,17 +351,25 @@ function AllProducts() {
             z-index: 1;
           }
 
-          /* PRESERVED CARD SIZING STRUCTURE WITH EXTREME GLASS STYLING */
+          /* =========================================
+             CARD ANIMATION
+          ========================================= */
+
           @keyframes cardReveal {
             from {
               opacity: 0;
               transform: translateY(28px) scale(0.96);
             }
+
             to {
               opacity: 1;
               transform: translateY(0) scale(1);
             }
           }
+
+          /* =========================================
+             PRODUCT CARD
+          ========================================= */
 
           .product-card {
             background-color: rgba(15, 23, 42, 0.75);
@@ -335,15 +383,23 @@ function AllProducts() {
             flex-direction: column;
             min-width: 0;
             min-height: 400px;
-            animation: cardReveal 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: cardReveal 0.65s
+              cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: all 0.4s
+              cubic-bezier(0.16, 1, 0.3, 1);
           }
 
           .product-card:hover {
             transform: translateY(-8px);
             border-color: #38BDF8;
-            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.15);
+            box-shadow:
+              0 24px 48px rgba(0, 0, 0, 0.6),
+              0 0 30px rgba(56, 189, 248, 0.15);
           }
+
+          /* =========================================
+             IMAGE
+          ========================================= */
 
           .image-container {
             width: 100%;
@@ -360,13 +416,20 @@ function AllProducts() {
             height: 100%;
             object-fit: contain;
             display: block;
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+            transition:
+              transform 0.6s
+                cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.4s ease;
           }
 
           .product-card:hover .product-image {
             transform: scale(1.08);
             filter: brightness(1.08);
           }
+
+          /* =========================================
+             PRODUCT DETAILS
+          ========================================= */
 
           .product-details {
             padding: 18px 20px 20px;
@@ -409,6 +472,10 @@ function AllProducts() {
             color: #38BDF8;
           }
 
+          /* =========================================
+             BUTTON
+          ========================================= */
+
           .button-container {
             display: flex;
             flex-direction: column;
@@ -426,24 +493,37 @@ function AllProducts() {
             font-weight: 600;
             letter-spacing: 0.5px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s
+              cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             overflow: hidden;
           }
 
           .view-button {
-            background: linear-gradient(135deg, #06B6D4, #6366F1);
+            background: linear-gradient(
+              135deg,
+              #06B6D4,
+              #6366F1
+            );
             color: #FFFFFF;
             border: none;
-            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.25);
+            box-shadow: 0 4px 15px
+              rgba(6, 182, 212, 0.25);
           }
 
           .view-button::after {
             content: "";
             position: absolute;
-            top: 0; left: -60%;
-            width: 40%; height: 100%;
-            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+            top: 0;
+            left: -60%;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(
+              120deg,
+              transparent,
+              rgba(255, 255, 255, 0.4),
+              transparent
+            );
             transform: skewX(-20deg);
             transition: left 0.6s ease;
           }
@@ -454,14 +534,16 @@ function AllProducts() {
 
           .view-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
+            box-shadow: 0 8px 20px
+              rgba(6, 182, 212, 0.4);
             filter: brightness(1.1);
           }
 
           .cart-button {
             background-color: rgba(255, 255, 255, 0.05);
             color: #F8FAFC;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid
+              rgba(255, 255, 255, 0.15);
           }
 
           .cart-button:hover:not(:disabled) {
@@ -474,6 +556,10 @@ function AllProducts() {
             opacity: 0.6;
           }
 
+          /* =========================================
+             LOADING
+          ========================================= */
+
           .loading-message {
             text-align: center;
             color: #94A3B8;
@@ -483,6 +569,10 @@ function AllProducts() {
             position: relative;
             z-index: 1;
           }
+
+          /* =========================================
+             NO RESULTS
+          ========================================= */
 
           .no-results {
             max-width: 500px;
@@ -512,7 +602,11 @@ function AllProducts() {
           .clear-result-button {
             margin-top: 16px;
             padding: 12px 24px;
-            background: linear-gradient(135deg, #06B6D4, #6366F1);
+            background: linear-gradient(
+              135deg,
+              #06B6D4,
+              #6366F1
+            );
             color: #FFFFFF;
             border: none;
             border-radius: 6px;
@@ -522,122 +616,302 @@ function AllProducts() {
             cursor: pointer;
           }
 
-          /* TABLET RESPONSIVE PRESERVED */
+          /* =========================================
+             TABLET
+          ========================================= */
+
           @media (max-width: 1000px) {
+
             .products-page {
               padding: 35px 25px;
             }
+
             .products-header {
               flex-direction: column;
               align-items: stretch;
               gap: 20px;
             }
+
             .search-container {
               width: 100%;
             }
+
             .search-input {
               flex: 1;
               width: auto;
             }
+
             .product-grid {
-              grid-template-columns: repeat(2, minmax(0, 1fr));
+              grid-template-columns: repeat(
+                2,
+                minmax(0, 1fr)
+              );
               gap: 20px;
             }
           }
 
-          /* MOBILE RESPONSIVE PRESERVED */
+          /* =========================================
+             MOBILE - 4 CARDS PER ROW
+          ========================================= */
+
           @media (max-width: 600px) {
+
             .products-page {
-              padding: 25px 15px;
+              padding: 20px 8px 50px;
             }
+
             .products-title {
-              font-size: 28px;
+              font-size: 26px;
             }
+
+            .products-subtitle {
+              font-size: 12px;
+            }
+
+            .products-header {
+              margin-bottom: 15px;
+            }
+
             .search-container {
               display: grid;
               grid-template-columns: 1fr 1fr;
-              gap: 8px;
+              gap: 6px;
             }
+
             .search-input {
               grid-column: 1 / -1;
               width: 100%;
+              padding: 9px 10px;
+              font-size: 11px;
             }
+
+            .search-button,
+            .clear-button {
+              padding: 9px 8px;
+              font-size: 10px;
+            }
+
+            /* =====================================
+               EXACTLY 4 CARDS IN ONE ROW
+            ===================================== */
+
             .product-grid {
-              grid-template-columns: 1fr;
-              gap: 20px;
+              grid-template-columns: repeat(
+                4,
+                minmax(0, 1fr)
+              );
+              gap: 7px;
+              width: 100%;
+              margin-top: 20px;
+            }
+
+            /* =====================================
+               SMALL CARDS - NOT STRETCHED
+            ===================================== */
+
+            .product-card {
+              min-height: 0;
+              height: auto;
+              border-radius: 7px;
+            }
+
+            .image-container {
+              height: 85px;
+              padding: 5px;
+              border-radius: 7px 7px 0 0;
+            }
+
+            .product-details {
+              padding: 8px 6px 7px;
+            }
+
+            .product-name {
+              font-size: 10px;
+              line-height: 12px;
+              min-height: 24px;
+              margin-bottom: 5px;
+            }
+
+            .product-category {
+              font-size: 7px;
+              letter-spacing: 0.3px;
+              margin-bottom: 6px;
+            }
+
+            .product-price {
+              font-size: 10px;
+              margin-bottom: 8px;
+            }
+
+            .button-container {
+              gap: 5px;
+            }
+
+            .view-button {
+              padding: 7px 3px;
+              font-size: 7px;
+              border-radius: 4px;
+            }
+          }
+
+          /* =========================================
+             VERY SMALL PHONES
+          ========================================= */
+
+          @media (max-width: 380px) {
+
+            .products-page {
+              padding-left: 5px;
+              padding-right: 5px;
+            }
+
+            .product-grid {
+              gap: 5px;
+            }
+
+            .image-container {
+              height: 72px;
+            }
+
+            .product-details {
+              padding: 6px 4px;
+            }
+
+            .product-name {
+              font-size: 9px;
+              line-height: 11px;
+              min-height: 22px;
+            }
+
+            .product-category {
+              font-size: 6px;
+            }
+
+            .product-price {
+              font-size: 9px;
+            }
+
+            .view-button {
+              padding: 6px 2px;
+              font-size: 6px;
             }
           }
         `}
       </style>
 
       <div className="products-page">
+
         {/* AMBIENT LIGHT MESH */}
         <div className="ambient-orb-1" />
         <div className="ambient-orb-2" />
 
         {/* HEADER */}
         <div className="products-header">
+
           <div>
-            <p className="products-eyebrow">Full Catalog Index</p>
-            <h1 className="products-title">All Products</h1>
-            <p className="products-subtitle">Explore our complete collection</p>
+            <p className="products-eyebrow">
+              Full Catalog Index
+            </p>
+
+            <h1 className="products-title">
+              All Products
+            </h1>
+
+            <p className="products-subtitle">
+              Explore our complete collection
+            </p>
           </div>
 
           {/* SEARCH BAR */}
           <div className="search-container">
+
             <input
               className="search-input"
               type="text"
               placeholder="Search by name or category..."
               value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
+              onChange={(e) =>
+                setSearchInput(e.target.value)
+              }
               onKeyDown={handleKeyDown}
             />
 
-            <button className="search-button" onClick={handleSearch}>
+            <button
+              className="search-button"
+              onClick={handleSearch}
+            >
               Search
             </button>
 
             {search && (
-              <button className="clear-button" onClick={clearSearch}>
+              <button
+                className="clear-button"
+                onClick={clearSearch}
+              >
                 Clear
               </button>
             )}
+
           </div>
         </div>
 
         {/* SEARCH RESULT */}
         {!loading && search && (
           <p className="result-text">
-            Search results for: <strong>"{search}"</strong>
+            Search results for:{" "}
+            <strong>"{search}"</strong>
           </p>
         )}
 
         {/* LOADING */}
         {loading ? (
-          <h2 className="loading-message">Loading products catalog...</h2>
+
+          <h2 className="loading-message">
+            Loading products catalog...
+          </h2>
+
         ) : filteredProducts.length === 0 ? (
+
           <div className="no-results">
-            <h2>No products found</h2>
-            <p>Try searching with a different product name or category.</p>
+
+            <h2>
+              No products found
+            </h2>
+
+            <p>
+              Try searching with a different product
+              name or category.
+            </p>
 
             {search && (
-              <button onClick={clearSearch} className="clear-result-button">
+              <button
+                onClick={clearSearch}
+                className="clear-result-button"
+              >
                 Show All Products
               </button>
             )}
+
           </div>
+
         ) : (
-          /* PRESERVED PRODUCT GRID */
+
+          /* PRODUCT GRID */
           <div className="product-grid">
+
             {filteredProducts.map((product, idx) => (
+
               <div
                 key={product.id}
                 className="product-card"
-                style={{ animationDelay: `${idx * 60}ms` }}
+                style={{
+                  animationDelay: `${idx * 60}ms`,
+                }}
               >
+
                 {/* PRODUCT IMAGE */}
                 <div className="image-container">
+
                   <img
                     src={product.productImg}
                     alt={product.name}
@@ -647,28 +921,48 @@ function AllProducts() {
                         "https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&w=500&q=80";
                     }}
                   />
+
                 </div>
 
                 {/* PRODUCT DETAILS */}
                 <div className="product-details">
-                  <h2 className="product-name">{product.name}</h2>
-                  <p className="product-category">{product.category}</p>
-                  <p className="product-price">₹{product.price}</p>
 
-                  {/* BUTTONS */}
+                  <h2 className="product-name">
+                    {product.name}
+                  </h2>
+
+                  <p className="product-category">
+                    {product.category}
+                  </p>
+
+                  <p className="product-price">
+                    ₹{product.price}
+                  </p>
+
+                  {/* BUTTON */}
                   <div className="button-container">
+
                     <button
-                      onClick={() => viewDetails(product.id)}
+                      onClick={() =>
+                        viewDetails(product.id)
+                      }
                       className="view-button"
                     >
                       View Details →
                     </button>
+
                   </div>
+
                 </div>
+
               </div>
+
             ))}
+
           </div>
+
         )}
+
       </div>
     </>
   );
