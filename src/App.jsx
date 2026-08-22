@@ -1443,9 +1443,9 @@ body {
 
     max-width: 100% !important;
 
-    height: 225px !important;
+    height: 100% !important;
 
-    min-height: 225px !important;
+    min-height: 0 !important;
 
     border-radius: 7px !important;
 
