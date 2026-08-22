@@ -20,6 +20,7 @@ function Reveal({
 
   useEffect(() => {
     const el = ref.current;
+
     if (!el) return;
 
     const observer = new IntersectionObserver(
@@ -29,7 +30,9 @@ function Reveal({
           observer.unobserve(el);
         }
       },
-      { threshold: 0.15 },
+      {
+        threshold: 0.12,
+      },
     );
 
     observer.observe(el);
@@ -59,6 +62,8 @@ function Reveal({
 function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const navigate = useNavigate();
 
@@ -74,9 +79,10 @@ function App() {
 
       console.log("Products:", response.data);
 
-      setProducts(response.data);
+      setProducts(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error("Error fetching products:", error);
+      setProducts([]);
     } finally {
       setLoading(false);
     }
@@ -87,7 +93,7 @@ function App() {
   }, []);
 
   // =====================================================
-  // VIEW PRODUCT DETAILS
+  // VIEW DETAILS
   // =====================================================
 
   const viewDetails = (id) => {
@@ -95,7 +101,7 @@ function App() {
   };
 
   // =====================================================
-  // PRODUCT CATEGORIES
+  // CATEGORIES
   // =====================================================
 
   const categories = [
@@ -127,7 +133,7 @@ function App() {
       text: "Explore our collection of quality products designed to bring convenience and value into your everyday life.",
       stamp: "FRESH STOCK",
       image:
-        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1000&q=85",
     },
     {
       eyebrow: "ISSUE NO. 08 — JUST LANDED",
@@ -135,7 +141,7 @@ function App() {
       text: "New arrivals land in the catalog every week, from everyday tools to weekend finds.",
       stamp: "NEW ARRIVALS",
       image:
-        "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1000&q=85",
     },
     {
       eyebrow: "ISSUE NO. 09 — CUSTOMER FAVORITES",
@@ -143,11 +149,13 @@ function App() {
       text: "Our most reordered items, picked by shoppers who came back for seconds.",
       stamp: "BEST SELLERS",
       image:
-        "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=85",
     },
   ];
 
-  const [currentSlide, setCurrentSlide] = useState(0);
+  // =====================================================
+  // HERO AUTO SLIDER
+  // =====================================================
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -163,8 +171,6 @@ function App() {
   // SCROLL PROGRESS
   // =====================================================
 
-  const [scrollProgress, setScrollProgress] = useState(0);
-
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -172,7 +178,10 @@ function App() {
       const docHeight =
         document.documentElement.scrollHeight - window.innerHeight;
 
-      setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+      const progress =
+        docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+
+      setScrollProgress(Math.min(100, Math.max(0, progress)));
     };
 
     window.addEventListener("scroll", handleScroll, {
@@ -181,7 +190,9 @@ function App() {
 
     handleScroll();
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   // =====================================================
@@ -194,15 +205,16 @@ function App() {
   });
 
   const handleHeroMouseMove = (e) => {
+    if (window.innerWidth <= 768) return;
+
     const rect = e.currentTarget.getBoundingClientRect();
 
     const px = (e.clientX - rect.left) / rect.width - 0.5;
-
     const py = (e.clientY - rect.top) / rect.height - 0.5;
 
     setTilt({
-      x: px * 14,
-      y: py * -14,
+      x: px * 10,
+      y: py * -10,
     });
   };
 
@@ -213,15 +225,19 @@ function App() {
     });
   };
 
+  // =====================================================
+  // RENDER
+  // =====================================================
+
   return (
     <div style={styles.page}>
       {/* =====================================================
-          FONTS
+          FONT
       ===================================================== */}
 
       <link
         rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap"
       />
 
       <style>{globalAnimations}</style>
@@ -243,7 +259,7 @@ function App() {
             ...styles.progressFill,
             width: `${scrollProgress}%`,
           }}
-        ></div>
+        />
       </div>
 
       {/* =====================================================
@@ -285,11 +301,19 @@ function App() {
           </p>
 
           <div style={styles.heroButtons}>
-            <Link to="/all" style={styles.shopButton} className="btn-shine">
+            <Link
+              to="/all"
+              style={styles.shopButton}
+              className="btn-shine"
+            >
               Shop Now →
             </Link>
 
-            <Link to="/add" style={styles.addButton} className="btn-outline">
+            <Link
+              to="/add"
+              style={styles.addButton}
+              className="btn-outline"
+            >
               Add Product
             </Link>
           </div>
@@ -321,16 +345,28 @@ function App() {
                   ...styles.heroSlideImg,
                   backgroundImage: `url('${slide.image}')`,
                   opacity: i === currentSlide ? 1 : 0,
-                  transform: i === currentSlide ? "scale(1)" : "scale(1.08)",
+                  transform:
+                    i === currentSlide
+                      ? "scale(1)"
+                      : "scale(1.08)",
                 }}
-              ></div>
+              />
             ))}
 
-            <div style={styles.heroSheen} className="hero-sheen"></div>
+            <div
+              style={styles.heroSheen}
+              className="hero-sheen"
+            />
           </div>
 
-          <div style={styles.heroStamp} className="stamp-float">
-            <span key={`stamp-${currentSlide}`} style={styles.heroStampText}>
+          <div
+            style={styles.heroStamp}
+            className="stamp-float"
+          >
+            <span
+              key={`stamp-${currentSlide}`}
+              style={styles.heroStampText}
+            >
               {activeSlide.stamp}
             </span>
           </div>
@@ -343,10 +379,14 @@ function App() {
                 aria-label={`Show slide ${i + 1}`}
                 style={{
                   ...styles.heroDot,
-                  ...(i === currentSlide ? styles.heroDotActive : {}),
+                  ...(i === currentSlide
+                    ? styles.heroDotActive
+                    : {}),
                 }}
-                className={i === currentSlide ? "dot-active" : ""}
-              ></button>
+                className={
+                  i === currentSlide ? "dot-active" : ""
+                }
+              />
             ))}
           </div>
         </div>
@@ -357,15 +397,24 @@ function App() {
       ===================================================== */}
 
       <Reveal as="section" style={styles.offer}>
-        <p style={styles.offerLabel}>LIMITED TIME OFFER</p>
-
-        <h2 style={styles.offerTitle}>Get 20% Off Your First Order</h2>
-
-        <p style={styles.offerText}>
-          Start shopping today and enjoy exclusive savings on selected products.
+        <p style={styles.offerLabel}>
+          LIMITED TIME OFFER
         </p>
 
-        <Link to="/all" style={styles.offerButton} className="btn-shine">
+        <h2 style={styles.offerTitle}>
+          Get 20% Off Your First Order
+        </h2>
+
+        <p style={styles.offerText}>
+          Start shopping today and enjoy exclusive savings
+          on selected products.
+        </p>
+
+        <Link
+          to="/all"
+          style={styles.offerButton}
+          className="btn-shine"
+        >
           Explore Offers
         </Link>
       </Reveal>
@@ -376,12 +425,17 @@ function App() {
 
       <section style={styles.categorySection}>
         <Reveal style={styles.sectionHeader}>
-          <p style={styles.sectionLabel}>SHOP BY CATEGORY</p>
+          <p style={styles.sectionLabel}>
+            SHOP BY CATEGORY
+          </p>
 
-          <h2 style={styles.sectionTitle}>Explore Our Collection</h2>
+          <h2 style={styles.sectionTitle}>
+            Explore Our Collection
+          </h2>
 
           <p style={styles.sectionSubtitle}>
-            Find the perfect products from your favorite categories.
+            Find the perfect products from your favorite
+            categories.
           </p>
         </Reveal>
 
@@ -395,7 +449,11 @@ function App() {
               <a
                 key={category}
                 href={`#cat-${category}`}
-                style={i % 2 === 0 ? styles.tabDark : styles.tabAccent}
+                style={
+                  i % 2 === 0
+                    ? styles.tabDark
+                    : styles.tabAccent
+                }
                 className="tab-link"
               >
                 {category}
@@ -405,16 +463,21 @@ function App() {
         )}
 
         {/* =====================================================
-            LOADING / PRODUCTS
+            LOADING
         ===================================================== */}
 
         {loading ? (
-          <h2 style={styles.message} className="pulse-text">
+          <h2
+            style={styles.message}
+            className="pulse-text"
+          >
             Loading products...
           </h2>
         ) : products.length === 0 ? (
           <div style={styles.emptyContainer}>
-            <h2 style={styles.message}>No products available</h2>
+            <h2 style={styles.message}>
+              No products available
+            </h2>
 
             <Link
               to="/add"
@@ -445,10 +508,14 @@ function App() {
                 {/* CATEGORY HEADER */}
 
                 <Reveal style={styles.categoryHeader}>
-                  <div>
-                    <p style={styles.categoryLabel}>CATEGORY</p>
+                  <div className="category-heading">
+                    <p style={styles.categoryLabel}>
+                      CATEGORY
+                    </p>
 
-                    <h2 style={styles.categoryTitle}>{category}</h2>
+                    <h2 style={styles.categoryTitle}>
+                      {category}
+                    </h2>
                   </div>
 
                   <Link
@@ -460,53 +527,84 @@ function App() {
                   </Link>
                 </Reveal>
 
-                {/* =====================================================
-                    PRODUCT GRID
-                ===================================================== */}
+                {/* PRODUCT GRID */}
 
-                <div style={styles.productGrid} className="product-grid">
-                  {categoryProducts.slice(0, 4).map((product, i) => (
-                    <Reveal
-                      key={product.id}
-                      style={styles.card}
-                      className="product-card mobile-product-card"
-                      delay={i * 90}
-                    >
-                      {/* PRODUCT IMAGE */}
+                <div
+                  style={styles.productGrid}
+                  className="product-grid"
+                >
+                  {categoryProducts
+                    .slice(0, 4)
+                    .map((product, i) => (
+                      <Reveal
+                        key={product.id}
+                        style={styles.card}
+                        className="product-card mobile-product-card"
+                        delay={i * 90}
+                      >
+                        {/* IMAGE */}
 
-                      <div style={styles.imageContainer}>
-                        <img
-                          src={product.productImg}
-                          alt={product.name}
-                          className="product-image"
-                          onError={(e) => {
-                            e.currentTarget.src =
-                              "https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&w=500&q=80";
-                          }}
-                        />
-                      </div>
-
-                      <div style={styles.dashedLine}></div>
-
-                      {/* PRODUCT DETAILS */}
-
-                      <div style={styles.details}>
-                        <h3 style={styles.productName}>{product.name}</h3>
-
-                        <p style={styles.category}>{product.category}</p>
-
-                        <p style={styles.price}>₹{product.price}</p>
-
-                        <button
-                          onClick={() => viewDetails(product.id)}
-                          style={styles.viewButton}
-                          className="view-btn"
+                        <div
+                          style={styles.imageContainer}
+                          className="product-image-container"
                         >
-                          View Details
-                        </button>
-                      </div>
-                    </Reveal>
-                  ))}
+                          <img
+                            src={product.productImg}
+                            alt={product.name || "Product"}
+                            className="product-image"
+                            onError={(e) => {
+                              e.currentTarget.src =
+                                "https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&w=500&q=80";
+                            }}
+                          />
+                        </div>
+
+                        {/* DASHED LINE */}
+
+                        <div
+                          style={styles.dashedLine}
+                          className="dashedLine"
+                        />
+
+                        {/* DETAILS */}
+
+                        <div
+                          style={styles.details}
+                          className="details"
+                        >
+                          <h3
+                            style={styles.productName}
+                            className="productName"
+                          >
+                            {product.name}
+                          </h3>
+
+                          <p
+                            style={styles.category}
+                            className="category"
+                          >
+                            {product.category}
+                          </p>
+
+                          <p
+                            style={styles.price}
+                            className="price"
+                          >
+                            ₹{product.price}
+                          </p>
+
+                          <button
+                            onClick={() =>
+                              viewDetails(product.id)
+                            }
+                            style={styles.viewButton}
+                            className="view-btn"
+                          >
+                            View Details
+                          </button>
+                        </div>
+                      </Reveal>
+                    ))}
                 </div>
               </div>
             );
@@ -547,26 +645,37 @@ function App() {
             className="feature"
             delay={i * 100}
           >
-            <div style={styles.featureIcon} className="feature-icon">
+            <div
+              style={styles.featureIcon}
+              className="feature-icon"
+            >
               {f.icon}
             </div>
 
-            <h3 style={styles.featureTitle}>{f.title}</h3>
+            <h3 style={styles.featureTitle}>
+              {f.title}
+            </h3>
 
-            <p style={styles.featureText}>{f.text}</p>
+            <p style={styles.featureText}>
+              {f.text}
+            </p>
           </Reveal>
         ))}
       </section>
 
       {/* =====================================================
-          CUSTOMER REVIEWS
+          REVIEWS
       ===================================================== */}
 
       <section style={styles.reviews}>
         <Reveal>
-          <p style={styles.sectionLabel}>CUSTOMER REVIEWS</p>
+          <p style={styles.sectionLabel}>
+            CUSTOMER REVIEWS
+          </p>
 
-          <h2 style={styles.sectionTitle}>What Our Customers Say</h2>
+          <h2 style={styles.sectionTitle}>
+            What Our Customers Say
+          </h2>
         </Reveal>
 
         <div style={styles.reviewGrid}>
@@ -590,30 +699,48 @@ function App() {
               className="review-card"
               delay={i * 120}
             >
-              <div style={styles.stars} className="stars">
+              <div
+                style={styles.stars}
+                className="stars"
+              >
                 ★★★★★
               </div>
 
-              <p style={styles.reviewText}>{r.text}</p>
+              <p style={styles.reviewText}>
+                {r.text}
+              </p>
 
-              <strong style={styles.reviewAuthor}>{r.author}</strong>
+              <strong style={styles.reviewAuthor}>
+                {r.author}
+              </strong>
             </Reveal>
           ))}
         </div>
       </section>
 
       {/* =====================================================
-          FINAL CTA
+          CTA
       ===================================================== */}
 
-      <Reveal as="section" style={styles.cta} className="cta-glow">
-        <h2 style={styles.ctaTitle}>Ready to Find Your Next Favorite?</h2>
+      <Reveal
+        as="section"
+        style={styles.cta}
+        className="cta-glow"
+      >
+        <h2 style={styles.ctaTitle}>
+          Ready to Find Your Next Favorite?
+        </h2>
 
         <p style={styles.ctaText}>
-          Browse our complete collection and discover something special.
+          Browse our complete collection and discover
+          something special.
         </p>
 
-        <Link to="/all" style={styles.ctaButton} className="btn-shine">
+        <Link
+          to="/all"
+          style={styles.ctaButton}
+          className="btn-shine"
+        >
           Start Shopping →
         </Link>
       </Reveal>
@@ -622,7 +749,9 @@ function App() {
           FOOTER
       ===================================================== */}
 
-      <footer style={styles.footer}>© 2026 Market. All Rights Reserved.</footer>
+      <footer style={styles.footer}>
+        © 2026 Market. All Rights Reserved.
+      </footer>
     </div>
   );
 }
@@ -635,34 +764,56 @@ const DISPLAY = "'Space Grotesk', sans-serif";
 const BODY = "'Plus Jakarta Sans', sans-serif";
 const MONO = "'JetBrains Mono', monospace";
 
-const ACCENT_GRADIENT = "linear-gradient(135deg, #06B6D4, #6366F1)";
+const ACCENT_GRADIENT =
+  "linear-gradient(135deg, #06B6D4, #6366F1)";
 
 // =====================================================
-// GLOBAL ANIMATIONS
+// GLOBAL ANIMATIONS + RESPONSIVE CSS
 // =====================================================
 
 const globalAnimations = `
 
-* {
-  scroll-behavior: smooth;
+/* =====================================================
+   GLOBAL RESET
+===================================================== */
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
+html {
   width: 100%;
-  min-height: 100%;
+  min-width: 0;
   margin: 0;
   padding: 0;
+  scroll-behavior: smooth;
 }
 
 body {
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
   overflow-x: hidden;
 }
 
-@keyframes heroFadeIn {
+#root {
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
 
+/* =====================================================
+   ANIMATIONS
+===================================================== */
+
+@keyframes heroFadeIn {
   from {
     opacity: 0;
     transform: translateY(10px);
@@ -672,7 +823,6 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
-
 }
 
 .hero-fade {
@@ -683,7 +833,6 @@ body {
 }
 
 @keyframes glowPan {
-
   0% {
     background-position: 0% 50%;
   }
@@ -695,11 +844,9 @@ body {
   100% {
     background-position: 0% 50%;
   }
-
 }
 
 .hero-glow {
-
   background-image:
     radial-gradient(
       circle at 20% 20%,
@@ -722,7 +869,6 @@ body {
 }
 
 @keyframes floatOrb {
-
   0% {
     transform:
       translate(0,0)
@@ -734,11 +880,9 @@ body {
       translate(50px,-50px)
       scale(1.1);
   }
-
 }
 
 @keyframes sheenSweep {
-
   0% {
     transform:
       translateX(-120%)
@@ -750,7 +894,6 @@ body {
       translateX(220%)
       skewX(-15deg);
   }
-
 }
 
 .hero-sheen {
@@ -762,7 +905,6 @@ body {
 }
 
 @keyframes floatY {
-
   0%,100% {
     transform:
       translateY(0px)
@@ -774,7 +916,6 @@ body {
       translateY(-10px)
       rotate(-12deg);
   }
-
 }
 
 .stamp-float {
@@ -786,7 +927,6 @@ body {
 }
 
 @keyframes underlineGrow {
-
   from {
     transform: scaleX(0);
   }
@@ -794,24 +934,15 @@ body {
   to {
     transform: scaleX(1);
   }
-
 }
 
 .title-underline {
-
   display: block;
-
   width: 84px;
-
   height: 3px;
-
-  background:
-    ${ACCENT_GRADIENT};
-
+  background: ${ACCENT_GRADIENT};
   margin-bottom: 22px;
-
   transform-origin: left;
-
   animation:
     underlineGrow
     0.9s
@@ -820,12 +951,13 @@ body {
     both;
 }
 
+/* =====================================================
+   REVEAL
+===================================================== */
+
 .reveal {
-
   opacity: 0;
-
-  transform:
-    translateY(28px);
+  transform: translateY(28px);
 
   transition:
     opacity
@@ -838,18 +970,17 @@ body {
 }
 
 .reveal.is-visible {
-
   opacity: 1;
-
-  transform:
-    translateY(0);
+  transform: translateY(0);
 }
+
+/* =====================================================
+   BUTTONS
+===================================================== */
 
 .btn-shine,
 .btn-outline {
-
   position: relative;
-
   overflow: hidden;
 
   transition:
@@ -863,7 +994,6 @@ body {
 }
 
 .btn-shine::after {
-
   content: "";
 
   position: absolute;
@@ -897,7 +1027,6 @@ body {
 
 .btn-shine:hover,
 .btn-outline:hover {
-
   transform:
     translateY(-3px)
     scale(1.03);
@@ -908,7 +1037,6 @@ body {
 }
 
 .btn-outline:hover {
-
   background-color:
     rgba(255,255,255,0.06);
 
@@ -916,8 +1044,11 @@ body {
     #38BDF8;
 }
 
-.tab-link {
+/* =====================================================
+   TABS
+===================================================== */
 
+.tab-link {
   transition:
     transform
     0.25s
@@ -929,7 +1060,6 @@ body {
 }
 
 .tab-link:hover {
-
   transform:
     translateY(-5px);
 
@@ -937,8 +1067,11 @@ body {
     0 10px 16px rgba(0,0,0,0.4);
 }
 
-.view-all-link {
+/* =====================================================
+   VIEW ALL
+===================================================== */
 
+.view-all-link {
   position: relative;
 
   transition:
@@ -948,7 +1081,6 @@ body {
 }
 
 .view-all-link::after {
-
   content: "";
 
   position: absolute;
@@ -972,8 +1104,11 @@ body {
   width: 100%;
 }
 
-.product-card {
+/* =====================================================
+   PRODUCT CARD
+===================================================== */
 
+.product-card {
   transition:
     transform
     0.45s
@@ -989,7 +1124,6 @@ body {
 }
 
 .product-card:hover {
-
   transform:
     translateY(-12px)
     rotate(-0.6deg);
@@ -1002,8 +1136,11 @@ body {
     0 0 24px rgba(56,189,248,0.15);
 }
 
-.product-image {
+/* =====================================================
+   PRODUCT IMAGE
+===================================================== */
 
+.product-image {
   transition:
     transform
     0.6s
@@ -1011,16 +1148,17 @@ body {
 }
 
 .product-card:hover .product-image {
-
   transform:
-    scale(1.1)
+    scale(1.08)
     rotate(1deg);
 }
 
+/* =====================================================
+   VIEW BUTTON
+===================================================== */
+
 .view-btn {
-
   position: relative;
-
   overflow: hidden;
 
   transition:
@@ -1034,7 +1172,6 @@ body {
 }
 
 .view-btn::after {
-
   content: "";
 
   position: absolute;
@@ -1067,13 +1204,16 @@ body {
 }
 
 .view-btn:hover {
-
   filter:
     brightness(1.12);
 
   transform:
     translateY(-2px);
 }
+
+/* =====================================================
+   DOT
+===================================================== */
 
 .dot-active {
   animation:
@@ -1084,7 +1224,6 @@ body {
 }
 
 @keyframes dotPulse {
-
   0%,100% {
     box-shadow:
       0 0 0 0
@@ -1096,11 +1235,13 @@ body {
       0 0 0 6px
       rgba(56,189,248,0);
   }
-
 }
 
-@keyframes pulseText {
+/* =====================================================
+   LOADING
+===================================================== */
 
+@keyframes pulseText {
   0%,100% {
     opacity: 0.55;
   }
@@ -1108,7 +1249,6 @@ body {
   50% {
     opacity: 1;
   }
-
 }
 
 .pulse-text {
@@ -1119,8 +1259,11 @@ body {
     infinite;
 }
 
-.feature {
+/* =====================================================
+   FEATURES
+===================================================== */
 
+.feature {
   transition:
     transform
     0.3s
@@ -1128,13 +1271,11 @@ body {
 }
 
 .feature:hover {
-
   transform:
     translateY(-6px);
 }
 
 .feature-icon {
-
   transition:
     transform
     0.4s
@@ -1150,7 +1291,6 @@ body {
 }
 
 .feature:hover .feature-icon {
-
   transform:
     scale(1.15)
     rotate(10deg);
@@ -1163,8 +1303,11 @@ body {
     rgba(255,255,255,0.08);
 }
 
-.review-card {
+/* =====================================================
+   REVIEWS
+===================================================== */
 
+.review-card {
   transition:
     transform
     0.4s
@@ -1180,7 +1323,6 @@ body {
 }
 
 .review-card:hover {
-
   transform:
     translateY(-8px)
     scale(1.015);
@@ -1194,7 +1336,6 @@ body {
 }
 
 .stars {
-
   display: inline-block;
 
   transition:
@@ -1211,7 +1352,6 @@ body {
 }
 
 @keyframes starWiggle {
-
   0%,100% {
     transform:
       scale(1)
@@ -1229,11 +1369,13 @@ body {
       scale(1.15)
       rotate(4deg);
   }
-
 }
 
-@keyframes ctaGlow {
+/* =====================================================
+   CTA
+===================================================== */
 
+@keyframes ctaGlow {
   0%,100% {
     box-shadow:
       inset
@@ -1247,7 +1389,6 @@ body {
       0 0 140px
       rgba(99,102,241,0.20);
   }
-
 }
 
 .cta-glow {
@@ -1258,16 +1399,123 @@ body {
     infinite;
 }
 
-
 /* =====================================================
-   MOBILE
-   EXACTLY 4 SMALL CARDS IN ONE ROW
-   ===================================================== */
+   LARGE DESKTOP
+===================================================== */
 
-@media (max-width: 380px) {
+@media (min-width: 1400px) {
+
+  .hero-content-inner {
+    max-width: 700px;
+  }
 
   .product-grid {
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr)) !important;
 
+    gap: 28px !important;
+  }
+
+  .mobile-product-card {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (min-width: 769px) and (max-width: 1100px) {
+
+  .product-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr)) !important;
+
+    gap: 22px !important;
+  }
+
+  .mobile-product-card {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .hero {
+    gap: 40px !important;
+  }
+
+  .hero-content {
+    flex: 1 1 400px !important;
+  }
+
+  .hero-image-wrap {
+    flex: 1 1 320px !important;
+  }
+}
+
+/* =====================================================
+   MOBILE GENERAL
+===================================================== */
+
+@media (max-width: 768px) {
+
+  body {
+    overflow-x: hidden !important;
+  }
+
+  #root {
+    overflow-x: hidden !important;
+  }
+
+  /* HERO */
+
+  .hero-glow {
+    background-size: 160% 160%;
+  }
+
+  /* CATEGORY */
+
+  .category-heading {
+    min-width: 0;
+  }
+
+  /* CARD HOVER */
+
+  .product-card:hover {
+    transform:
+      translateY(-3px) !important;
+
+    box-shadow:
+      0 10px 20px
+      rgba(0,0,0,0.4) !important;
+  }
+
+  .product-card:hover .product-image {
+    transform:
+      scale(1.04) !important;
+  }
+
+  /* TABS */
+
+  .tab-link:hover {
+    transform: none;
+  }
+
+  /* BUTTONS */
+
+  .btn-shine:hover,
+  .btn-outline:hover {
+    transform: none;
+  }
+}
+
+/* =====================================================
+   600PX AND BELOW
+===================================================== */
+
+@media (max-width: 600px) {
+
+  .product-grid {
     display: grid !important;
 
     grid-template-columns:
@@ -1275,7 +1523,7 @@ body {
         4,
         minmax(
           0,
-          calc((100vw - 55px) / 4)
+          1fr
         )
       ) !important;
 
@@ -1285,56 +1533,46 @@ body {
 
     max-width: 100% !important;
 
-    margin: 0 auto !important;
+    margin: 0 !important;
 
     padding: 0 !important;
 
-    justify-content: center !important;
+    justify-content: stretch !important;
 
     align-items: start !important;
   }
 
-
-  /* =================================================
-     CARD
-     ================================================= */
-
   .mobile-product-card {
-
     width: 100% !important;
 
     min-width: 0 !important;
 
     max-width: 100% !important;
 
-    height: 245px !important;
+    height: 250px !important;
 
-    min-height: 245px !important;
+    min-height: 250px !important;
 
     border-radius: 7px !important;
 
     overflow: hidden !important;
-
-    box-sizing: border-box !important;
   }
 
+  /* IMAGE */
 
-  /* =================================================
-     IMAGE
-     ================================================= */
-
-  .mobile-product-card > div:first-child {
+  .mobile-product-card
+  .product-image-container {
 
     width: 100% !important;
 
-    height: 82px !important;
+    height: 88px !important;
 
-    min-height: 82px !important;
+    min-height: 88px !important;
 
     flex-shrink: 0 !important;
 
     background-color:
-      rgb(250, 251, 255) !important;
+      rgb(250,251,255) !important;
 
     overflow: hidden !important;
 
@@ -1345,8 +1583,8 @@ body {
     align-items: center !important;
   }
 
-
-  .mobile-product-card .product-image {
+  .mobile-product-card
+  .product-image {
 
     width: 100% !important;
 
@@ -1359,12 +1597,12 @@ body {
     padding: 3px !important;
   }
 
+  /* DASHED LINE */
 
-  /* =================================================
-     DASHED LINE
-     ================================================= */
+  .mobile-product-card
+  .dashedLine {
 
-  .mobile-product-card > .dashedLine {
+    height: 1px !important;
 
     margin:
       0 4px !important;
@@ -1372,12 +1610,10 @@ body {
     flex-shrink: 0 !important;
   }
 
+  /* DETAILS */
 
-  /* =================================================
-     DETAILS
-     ================================================= */
-
-  .mobile-product-card .details {
+  .mobile-product-card
+  .details {
 
     width: 100% !important;
 
@@ -1395,14 +1631,10 @@ body {
     box-sizing: border-box !important;
   }
 
+  /* NAME */
 
-  /* =================================================
-     PRODUCT NAME
-     ================================================= */
-
-  .mobile-product-card .productName,
-
-  .mobile-product-card h3 {
+  .mobile-product-card
+  .productName {
 
     width: 100% !important;
 
@@ -1440,12 +1672,10 @@ body {
       anywhere !important;
   }
 
+  /* CATEGORY */
 
-  /* =================================================
-     CATEGORY
-     ================================================= */
-
-  .mobile-product-card .category {
+  .mobile-product-card
+  .category {
 
     width: 100% !important;
 
@@ -1470,12 +1700,10 @@ body {
       ellipsis !important;
   }
 
+  /* PRICE */
 
-  /* =================================================
-     PRICE
-     ================================================= */
-
-  .mobile-product-card .price {
+  .mobile-product-card
+  .price {
 
     font-size: 11px !important;
 
@@ -1488,12 +1716,10 @@ body {
       nowrap !important;
   }
 
+  /* BUTTON */
 
-  /* =================================================
-     VIEW BUTTON
-     ================================================= */
-
-  .mobile-product-card .view-btn {
+  .mobile-product-card
+  .view-btn {
 
     width: 100% !important;
 
@@ -1517,34 +1743,20 @@ body {
     letter-spacing: 0 !important;
   }
 
+  /* CATEGORY HEADER */
 
-  /* =================================================
-     HOVER
-     ================================================= */
-
-  .mobile-product-card:hover {
-
-    transform:
-      translateY(-3px) !important;
-
-    box-shadow:
-      0 10px 20px
-      rgba(0,0,0,0.4) !important;
+  .category-header {
+    align-items: flex-start !important;
   }
 
-
-  .mobile-product-card:hover .product-image {
-
-    transform:
-      scale(1.04) !important;
+  .view-all-link {
+    font-size: 10px !important;
   }
-
 }
 
-
 /* =====================================================
-   390PX AND ABOVE
-   ===================================================== */
+   390PX - 600PX
+===================================================== */
 
 @media (min-width: 390px) and (max-width: 600px) {
 
@@ -1555,13 +1767,12 @@ body {
         4,
         minmax(
           0,
-          calc((100vw - 60px) / 4)
+          1fr
         )
       ) !important;
 
     gap: 9px !important;
   }
-
 
   .mobile-product-card {
 
@@ -1570,18 +1781,16 @@ body {
     min-height: 260px !important;
   }
 
-
-  .mobile-product-card > div:first-child {
+  .mobile-product-card
+  .product-image-container {
 
     height: 90px !important;
 
     min-height: 90px !important;
   }
 
-
-  .mobile-product-card .productName,
-
-  .mobile-product-card h3 {
+  .mobile-product-card
+  .productName {
 
     font-size: 10px !important;
 
@@ -1592,24 +1801,24 @@ body {
     max-height: 24px !important;
   }
 
-
-  .mobile-product-card .category {
+  .mobile-product-card
+  .category {
 
     font-size: 7px !important;
 
     line-height: 9px !important;
   }
 
-
-  .mobile-product-card .price {
+  .mobile-product-card
+  .price {
 
     font-size: 12px !important;
 
     line-height: 14px !important;
   }
 
-
-  .mobile-product-card .view-btn {
+  .mobile-product-card
+  .view-btn {
 
     font-size: 7px !important;
 
@@ -1618,15 +1827,13 @@ body {
     padding:
       6px 1px !important;
   }
-
 }
 
-
 /* =====================================================
-   VERY SMALL PHONES
-   ===================================================== */
+   380PX AND BELOW
+===================================================== */
 
-@media (max-width: 360px) {
+@media (max-width: 380px) {
 
   .product-grid {
 
@@ -1635,42 +1842,39 @@ body {
         4,
         minmax(
           0,
-          calc((100vw - 45px) / 4)
+          1fr
         )
       ) !important;
 
     gap: 6px !important;
   }
 
-
   .mobile-product-card {
 
-    height: 225px !important;
+    height: 235px !important;
 
-    min-height: 225px !important;
+    min-height: 235px !important;
 
     border-radius: 6px !important;
   }
 
+  .mobile-product-card
+  .product-image-container {
 
-  .mobile-product-card > div:first-child {
+    height: 78px !important;
 
-    height: 75px !important;
-
-    min-height: 75px !important;
+    min-height: 78px !important;
   }
 
-
-  .mobile-product-card .details {
+  .mobile-product-card
+  .details {
 
     padding:
       5px 4px 4px !important;
   }
 
-
-  .mobile-product-card .productName,
-
-  .mobile-product-card h3 {
+  .mobile-product-card
+  .productName {
 
     font-size: 8px !important;
 
@@ -1683,8 +1887,8 @@ body {
     margin-bottom: 3px !important;
   }
 
-
-  .mobile-product-card .category {
+  .mobile-product-card
+  .category {
 
     font-size: 5px !important;
 
@@ -1693,8 +1897,8 @@ body {
     margin-bottom: 4px !important;
   }
 
-
-  .mobile-product-card .price {
+  .mobile-product-card
+  .price {
 
     font-size: 10px !important;
 
@@ -1703,8 +1907,8 @@ body {
     margin-bottom: 4px !important;
   }
 
-
-  .mobile-product-card .view-btn {
+  .mobile-product-card
+  .view-btn {
 
     font-size: 5px !important;
 
@@ -1714,12 +1918,108 @@ body {
       4px 1px !important;
   }
 
+  .view-all-link {
+    font-size: 8px !important;
+  }
 }
 
+/* =====================================================
+   VERY SMALL PHONES
+===================================================== */
+
+@media (max-width: 360px) {
+
+  .product-grid {
+
+    grid-template-columns:
+      repeat(
+        4,
+        minmax(
+          0,
+          1fr
+        )
+      ) !important;
+
+    gap: 5px !important;
+  }
+
+  .mobile-product-card {
+
+    height: 220px !important;
+
+    min-height: 220px !important;
+  }
+
+  .mobile-product-card
+  .product-image-container {
+
+    height: 72px !important;
+
+    min-height: 72px !important;
+  }
+
+  .mobile-product-card
+  .details {
+
+    padding:
+      4px 3px 3px !important;
+  }
+
+  .mobile-product-card
+  .productName {
+
+    font-size: 7px !important;
+
+    line-height: 9px !important;
+
+    min-height: 18px !important;
+
+    max-height: 18px !important;
+  }
+
+  .mobile-product-card
+  .category {
+
+    font-size: 4.5px !important;
+
+    line-height: 6px !important;
+  }
+
+  .mobile-product-card
+  .price {
+
+    font-size: 9px !important;
+
+    line-height: 11px !important;
+  }
+
+  .mobile-product-card
+  .view-btn {
+
+    font-size: 4.5px !important;
+
+    line-height: 7px !important;
+
+    padding:
+      3px 1px !important;
+  }
+}
+
+/* =====================================================
+   MOBILE HERO
+===================================================== */
+
+@media (max-width: 768px) {
+
+  .hero-glow {
+    background-size: 180% 180%;
+  }
+
+}
 
 /* =====================================================
    REDUCED MOTION
-   ===================================================== */
+===================================================== */
 
 @media (prefers-reduced-motion: reduce) {
 
@@ -1746,7 +2046,6 @@ body {
 
     transform: none;
   }
-
 }
 
 `;
@@ -1762,19 +2061,13 @@ const styles = {
 
   page: {
     minHeight: "100vh",
-
     width: "100%",
-
+    maxWidth: "100%",
     backgroundColor: "#080C14",
-
     color: "#F8FAFC",
-
     fontFamily: BODY,
-
     boxSizing: "border-box",
-
     overflowX: "hidden",
-
     position: "relative",
   },
 
@@ -1784,51 +2077,33 @@ const styles = {
 
   ambientOrb1: {
     position: "fixed",
-
     top: "-10%",
-
     left: "-10%",
-
     width: "650px",
-
     height: "650px",
-
     borderRadius: "50%",
-
     background:
-      "radial-gradient(circle, rgba(99, 102, 241, 0.14) 0%, transparent 70%)",
-
+      "radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 70%)",
     filter: "blur(80px)",
-
-    animation: "floatOrb 20s ease-in-out infinite alternate",
-
+    animation:
+      "floatOrb 20s ease-in-out infinite alternate",
     pointerEvents: "none",
-
     zIndex: 0,
   },
 
   ambientOrb2: {
     position: "fixed",
-
     bottom: "-10%",
-
     right: "-10%",
-
     width: "700px",
-
     height: "700px",
-
     borderRadius: "50%",
-
     background:
-      "radial-gradient(circle, rgba(6, 182, 212, 0.13) 0%, transparent 70%)",
-
+      "radial-gradient(circle, rgba(6,182,212,0.13) 0%, transparent 70%)",
     filter: "blur(90px)",
-
-    animation: "floatOrb 24s ease-in-out infinite alternate-reverse",
-
+    animation:
+      "floatOrb 24s ease-in-out infinite alternate-reverse",
     pointerEvents: "none",
-
     zIndex: 0,
   },
 
@@ -1838,28 +2113,20 @@ const styles = {
 
   progressTrack: {
     position: "fixed",
-
     top: 0,
-
     left: 0,
-
     width: "100%",
-
     height: "3px",
-
     backgroundColor: "transparent",
-
     zIndex: 999,
   },
 
   progressFill: {
     height: "100%",
-
     background: ACCENT_GRADIENT,
-
     transition: "width 0.1s linear",
-
-    boxShadow: "0 0 8px rgba(56,189,248,0.7)",
+    boxShadow:
+      "0 0 8px rgba(56,189,248,0.7)",
   },
 
   // =====================================================
@@ -1867,295 +2134,208 @@ const styles = {
   // =====================================================
 
   hero: {
+    width: "100%",
     minHeight: "80vh",
-
     backgroundColor: "#0B1120",
-
     color: "#F8FAFC",
-
     display: "flex",
-
     alignItems: "center",
-
     justifyContent: "space-between",
-
-    padding: "clamp(40px, 7vw, 80px) clamp(20px, 8vw, 120px)",
-
-    gap: "clamp(40px, 6vw, 80px)",
-
+    padding:
+      "clamp(40px, 6vw, 80px) clamp(20px, 5vw, 80px)",
+    gap:
+      "clamp(35px, 5vw, 70px)",
     flexWrap: "wrap",
-
     boxSizing: "border-box",
-
     position: "relative",
-
     overflow: "hidden",
-
     zIndex: 1,
   },
 
   heroContent: {
-    flex: "1 1 450px",
-
-    maxWidth: "600px",
-
-    minWidth: "0",
-
+    flex:
+      "1 1 450px",
+    maxWidth: "650px",
+    minWidth: 0,
     position: "relative",
-
     zIndex: 1,
   },
 
   welcome: {
     fontFamily: MONO,
-
-    letterSpacing: "clamp(1px, 0.3vw, 2px)",
-
-    fontSize: "clamp(11px, 1.5vw, 13px)",
-
+    letterSpacing:
+      "clamp(1px, 0.3vw, 2px)",
+    fontSize:
+      "clamp(10px, 1.5vw, 13px)",
     color: "#38BDF8",
-
     marginBottom: "22px",
   },
 
   heroTitle: {
     fontFamily: DISPLAY,
-
     textTransform: "uppercase",
-
-    fontSize: "clamp(46px, 7.5vw, 68px)",
-
+    fontSize:
+      "clamp(42px, 7vw, 72px)",
     lineHeight: "1.05",
-
     margin: "0 0 25px",
-
     fontWeight: "700",
-
     letterSpacing: "-0.5px",
-
-    backgroundImage: "linear-gradient(135deg, #FFFFFF 30%, #94A3B8 100%)",
-
+    backgroundImage:
+      "linear-gradient(135deg, #FFFFFF 30%, #94A3B8 100%)",
     WebkitBackgroundClip: "text",
-
     WebkitTextFillColor: "transparent",
-
     backgroundClip: "text",
   },
 
   heroText: {
-    fontSize: "clamp(15px, 2vw, 18px)",
-
+    fontSize:
+      "clamp(14px, 2vw, 18px)",
     lineHeight: "1.7",
-
     color: "#94A3B8",
-
     marginBottom: "35px",
-
-    maxWidth: "460px",
+    maxWidth: "500px",
   },
 
   heroButtons: {
     display: "flex",
-
     gap: "15px",
-
     flexWrap: "wrap",
   },
 
   shopButton: {
     display: "inline-block",
-
     background: ACCENT_GRADIENT,
-
     color: "#FFFFFF",
-
     padding: "15px 30px",
-
     textDecoration: "none",
-
     borderRadius: "8px",
-
     fontFamily: MONO,
-
     fontWeight: "600",
-
     fontSize: "14px",
-
     letterSpacing: "0.5px",
-
     textAlign: "center",
-
-    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
+    boxShadow:
+      "0 4px 15px rgba(6,182,212,0.25)",
   },
 
   addButton: {
     display: "inline-block",
-
-    border: "1px solid rgba(255,255,255,0.15)",
-
+    border:
+      "1px solid rgba(255,255,255,0.15)",
     color: "#F8FAFC",
-
     padding: "15px 30px",
-
     textDecoration: "none",
-
     borderRadius: "8px",
-
     fontFamily: MONO,
-
     fontWeight: "600",
-
     fontSize: "14px",
-
     letterSpacing: "0.5px",
-
     textAlign: "center",
   },
 
+  // =====================================================
+  // HERO IMAGE
+  // =====================================================
+
   heroImageWrap: {
     position: "relative",
-
-    flex: "1 1 350px",
-
+    flex:
+      "1 1 350px",
     width: "100%",
-
-    maxWidth: "420px",
-
+    maxWidth: "520px",
     zIndex: 1,
   },
 
   heroFrame: {
     position: "relative",
-
     width: "100%",
-
-    height: "clamp(300px, 50vw, 500px)",
-
+    height:
+      "clamp(300px, 45vw, 520px)",
     borderRadius: "12px",
-
     overflow: "hidden",
-
-    boxShadow: "14px 14px 0px rgba(99,102,241,0.35)",
-
+    boxShadow:
+      "14px 14px 0 rgba(99,102,241,0.35)",
     marginRight: "14px",
-
     boxSizing: "border-box",
-
-    transition: "transform 0.2s ease-out",
-
-    border: "1px solid rgba(255,255,255,0.1)",
+    transition:
+      "transform 0.2s ease-out",
+    border:
+      "1px solid rgba(255,255,255,0.1)",
   },
 
   heroSlideImg: {
     position: "absolute",
-
     inset: 0,
-
     width: "100%",
-
     height: "100%",
-
     backgroundSize: "cover",
-
     backgroundPosition: "center",
-
-    transition: "opacity 1s ease, transform 1.2s ease",
+    transition:
+      "opacity 1s ease, transform 1.2s ease",
   },
 
   heroSheen: {
     position: "absolute",
-
     inset: 0,
-
     pointerEvents: "none",
-
     background:
       "linear-gradient(120deg, transparent, rgba(255,255,255,0.16), transparent)",
-
     width: "40%",
   },
 
   heroDots: {
     display: "flex",
-
     gap: "8px",
-
     justifyContent: "center",
-
     marginTop: "16px",
   },
 
   heroDot: {
     width: "8px",
-
     height: "8px",
-
     borderRadius: "50%",
-
-    backgroundColor: "rgba(255,255,255,0.2)",
-
+    backgroundColor:
+      "rgba(255,255,255,0.2)",
     border: "none",
-
     padding: 0,
-
     cursor: "pointer",
-
-    transition: "width 0.25s ease, background-color 0.25s ease",
+    transition:
+      "width 0.25s ease, background-color 0.25s ease",
   },
 
   heroDotActive: {
     width: "22px",
-
     borderRadius: "5px",
-
     backgroundColor: "#38BDF8",
   },
 
   heroStamp: {
     position: "absolute",
-
     top: "-18px",
-
     left: "-18px",
-
     width: "84px",
-
     height: "84px",
-
     borderRadius: "50%",
-
-    border: "2px dashed #38BDF8",
-
-    backgroundColor: "rgba(15,23,42,0.9)",
-
+    border:
+      "2px dashed #38BDF8",
+    backgroundColor:
+      "rgba(15,23,42,0.9)",
     display: "flex",
-
     alignItems: "center",
-
     justifyContent: "center",
-
     textAlign: "center",
-
     transform: "rotate(-12deg)",
-
     zIndex: 2,
-
     backdropFilter: "blur(10px)",
   },
 
   heroStampText: {
     fontFamily: MONO,
-
     fontSize: "10px",
-
     fontWeight: "600",
-
     color: "#38BDF8",
-
     letterSpacing: "0.5px",
-
     lineHeight: "1.3",
-
     padding: "0 8px",
   },
 
@@ -2164,83 +2344,61 @@ const styles = {
   // =====================================================
 
   offer: {
-    padding: "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
-
-    backgroundColor: "rgba(15, 23, 42, 0.75)",
-
+    width: "100%",
+    padding:
+      "clamp(50px, 8vw, 80px) clamp(20px, 5vw, 80px)",
+    backgroundColor:
+      "rgba(15,23,42,0.75)",
     backdropFilter: "blur(20px)",
-
     WebkitBackdropFilter: "blur(20px)",
-
-    borderTop: "1px solid rgba(255,255,255,0.1)",
-
-    borderBottom: "1px solid rgba(255,255,255,0.1)",
-
+    borderTop:
+      "1px solid rgba(255,255,255,0.1)",
+    borderBottom:
+      "1px solid rgba(255,255,255,0.1)",
     textAlign: "center",
-
     boxSizing: "border-box",
-
     position: "relative",
-
     zIndex: 1,
   },
 
   offerLabel: {
     fontFamily: MONO,
-
     letterSpacing: "2px",
-
     fontSize: "12px",
-
     fontWeight: "600",
-
     color: "#34D399",
   },
 
   offerTitle: {
     fontFamily: DISPLAY,
-
     textTransform: "uppercase",
-
-    fontSize: "clamp(28px, 5vw, 40px)",
-
+    fontSize:
+      "clamp(25px, 5vw, 40px)",
     margin: "15px 0",
-
     fontWeight: "600",
-
     color: "#F8FAFC",
   },
 
   offerText: {
     color: "#94A3B8",
-
-    fontSize: "clamp(15px, 2vw, 17px)",
-
+    fontSize:
+      "clamp(14px, 2vw, 17px)",
     marginBottom: "30px",
-
     lineHeight: "1.6",
   },
 
   offerButton: {
     display: "inline-block",
-
     background: ACCENT_GRADIENT,
-
     color: "#FFFFFF",
-
     padding: "14px 35px",
-
     borderRadius: "8px",
-
     textDecoration: "none",
-
     fontFamily: MONO,
-
     fontWeight: "600",
-
     fontSize: "14px",
-
-    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
+    boxShadow:
+      "0 4px 15px rgba(6,182,212,0.25)",
   },
 
   // =====================================================
@@ -2248,124 +2406,94 @@ const styles = {
   // =====================================================
 
   categorySection: {
-    padding: "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
-
+    width: "100%",
+    padding:
+      "clamp(50px, 7vw, 80px) clamp(16px, 5vw, 80px)",
     backgroundColor: "#080C14",
-
     boxSizing: "border-box",
-
     position: "relative",
-
     zIndex: 1,
   },
 
   sectionHeader: {
+    width: "100%",
     textAlign: "center",
-
-    marginBottom: "clamp(30px, 5vw, 45px)",
+    marginBottom:
+      "clamp(30px, 5vw, 45px)",
   },
 
   sectionLabel: {
     fontFamily: MONO,
-
     letterSpacing: "2px",
-
     fontSize: "12px",
-
     fontWeight: "600",
-
     color: "#38BDF8",
   },
 
   sectionTitle: {
     fontFamily: DISPLAY,
-
     textTransform: "uppercase",
-
-    fontSize: "clamp(28px, 5vw, 40px)",
-
+    fontSize:
+      "clamp(25px, 5vw, 40px)",
     margin: "15px 0",
-
     fontWeight: "600",
-
     color: "#F8FAFC",
   },
 
   sectionSubtitle: {
     color: "#94A3B8",
-
-    fontSize: "clamp(15px, 2vw, 17px)",
-
+    fontSize:
+      "clamp(14px, 2vw, 17px)",
     lineHeight: "1.6",
+    margin: 0,
   },
 
   // =====================================================
-  // CATEGORY TABS
+  // TABS
   // =====================================================
 
   tabStrip: {
+    width: "100%",
     display: "flex",
-
     flexWrap: "wrap",
-
     justifyContent: "center",
-
     gap: "8px",
-
     maxWidth: "1200px",
-
-    margin: "0 auto clamp(35px, 5vw, 55px)",
+    margin:
+      "0 auto clamp(35px, 5vw, 55px)",
   },
 
   tabDark: {
     fontFamily: MONO,
-
     fontSize: "12px",
-
     fontWeight: "600",
-
     letterSpacing: "0.5px",
-
     padding: "9px 18px",
-
-    borderRadius: "8px 8px 0 0",
-
+    borderRadius:
+      "8px 8px 0 0",
     textDecoration: "none",
-
     textTransform: "uppercase",
-
     display: "inline-block",
-
-    backgroundColor: "rgba(15, 23, 42, 0.75)",
-
+    backgroundColor:
+      "rgba(15,23,42,0.75)",
     color: "#F8FAFC",
-
-    border: "1px solid rgba(255,255,255,0.1)",
-
+    border:
+      "1px solid rgba(255,255,255,0.1)",
     borderBottom: "none",
   },
 
   tabAccent: {
     fontFamily: MONO,
-
     fontSize: "12px",
-
     fontWeight: "600",
-
     letterSpacing: "0.5px",
-
     padding: "9px 18px",
-
-    borderRadius: "8px 8px 0 0",
-
+    borderRadius:
+      "8px 8px 0 0",
     textDecoration: "none",
-
     textTransform: "uppercase",
-
     display: "inline-block",
-
     background: ACCENT_GRADIENT,
-
     color: "#FFFFFF",
   },
 
@@ -2375,73 +2503,51 @@ const styles = {
 
   categoryContainer: {
     width: "100%",
-
-    maxWidth: "1200px",
-
-    margin: "0 auto 70px",
-
+    maxWidth: "1250px",
+    margin:
+      "0 auto 70px",
     scrollMarginTop: "20px",
   },
 
   categoryHeader: {
     display: "flex",
-
     justifyContent: "space-between",
-
     alignItems: "center",
-
     gap: "20px",
-
     marginBottom: "25px",
-
-    borderBottom: "2px solid rgba(255,255,255,0.1)",
-
+    borderBottom:
+      "2px solid rgba(255,255,255,0.1)",
     paddingBottom: "15px",
-
     flexWrap: "wrap",
+    minWidth: 0,
   },
 
   categoryLabel: {
     fontFamily: MONO,
-
     margin: "0 0 5px",
-
     fontSize: "11px",
-
     letterSpacing: "2px",
-
     color: "#64748B",
-
     fontWeight: "600",
   },
 
   categoryTitle: {
     fontFamily: DISPLAY,
-
     textTransform: "uppercase",
-
-    fontSize: "clamp(22px, 4vw, 28px)",
-
-    margin: "0",
-
+    fontSize:
+      "clamp(22px, 4vw, 28px)",
+    margin: 0,
     fontWeight: "600",
-
     color: "#F8FAFC",
   },
 
   viewAll: {
     fontFamily: MONO,
-
     fontSize: "13px",
-
     color: "#38BDF8",
-
     textDecoration: "none",
-
     fontWeight: "600",
-
     whiteSpace: "nowrap",
-
     display: "inline-block",
   },
 
@@ -2451,20 +2557,14 @@ const styles = {
 
   productGrid: {
     display: "grid",
-
-    gridTemplateColumns: "repeat(auto-fill, minmax(250px, 250px))",
-
+    gridTemplateColumns:
+      "repeat(4, minmax(0, 1fr))",
     gap: "30px",
-
-    maxWidth: "1200px",
-
-    margin: "0 auto",
-
-    justifyContent: "start",
-
-    alignItems: "start",
-
     width: "100%",
+    maxWidth: "1250px",
+    margin: "0 auto",
+    justifyContent: "stretch",
+    alignItems: "start",
   },
 
   // =====================================================
@@ -2472,28 +2572,22 @@ const styles = {
   // =====================================================
 
   card: {
-    backgroundColor: "rgba(15, 23, 42, 0.75)",
-
+    backgroundColor:
+      "rgba(15,23,42,0.75)",
     backdropFilter: "blur(20px)",
-
-    WebkitBackdropFilter: "blur(20px)",
-
+    WebkitBackdropFilter:
+      "blur(20px)",
     borderRadius: "12px",
-
     overflow: "hidden",
-
-    border: "1px solid rgba(255,255,255,0.1)",
-
-    boxShadow: "0 14px 30px rgba(0, 0, 0, 0.4)",
-
+    border:
+      "1px solid rgba(255,255,255,0.1)",
+    boxShadow:
+      "0 14px 30px rgba(0,0,0,0.4)",
     display: "flex",
-
     flexDirection: "column",
-
-    width: "250px",
-
+    width: "100%",
     height: "400px",
-
+    minWidth: 0,
     boxSizing: "border-box",
   },
 
@@ -2503,38 +2597,31 @@ const styles = {
 
   imageContainer: {
     width: "100%",
-
     height: "200px",
-
-    backgroundColor: "rgb(250, 251, 255)",
-
+    backgroundColor:
+      "rgb(250,251,255)",
     overflow: "hidden",
-
     display: "flex",
-
     justifyContent: "center",
-
     alignItems: "center",
-
     flexShrink: 0,
-
-    borderRadius: "12px 12px 0 0",
+    borderRadius:
+      "12px 12px 0 0",
   },
 
   image: {
     width: "100%",
-
     height: "100%",
-
     objectFit: "contain",
-
     display: "block",
   },
 
   dashedLine: {
-    borderTop: "1px dashed rgba(255,255,255,0.1)",
-
-    margin: "0 16px",
+    borderTop:
+      "1px dashed rgba(255,255,255,0.1)",
+    margin:
+      "0 16px",
+    flexShrink: 0,
   },
 
   // =====================================================
@@ -2542,70 +2629,50 @@ const styles = {
   // =====================================================
 
   details: {
-    padding: "16px 20px 20px",
-
+    padding:
+      "16px 20px 20px",
     display: "flex",
-
     flexDirection: "column",
-
-    flex: "1",
-
+    flex: 1,
     minWidth: 0,
   },
 
   productName: {
-    margin: "0 0 8px",
-
+    margin:
+      "0 0 8px",
     fontSize: "18px",
-
     lineHeight: "22px",
-
     minHeight: "44px",
-
     fontWeight: "600",
-
     color: "#F8FAFC",
-
     wordBreak: "break-word",
-
     overflow: "hidden",
-
-    display: "-webkit-box",
-
+    display:
+      "-webkit-box",
     WebkitLineClamp: 2,
-
-    WebkitBoxOrient: "vertical",
+    WebkitBoxOrient:
+      "vertical",
   },
 
   category: {
     fontFamily: MONO,
-
-    margin: "0 0 12px",
-
+    margin:
+      "0 0 12px",
     fontSize: "12px",
-
     letterSpacing: "0.5px",
-
     textTransform: "uppercase",
-
     color: "#34D399",
-
     overflow: "hidden",
-
     textOverflow: "ellipsis",
-
     whiteSpace: "nowrap",
   },
 
   price: {
     fontFamily: MONO,
-
-    margin: "0 0 18px",
-
+    margin:
+      "0 0 18px",
     fontSize: "22px",
-
     fontWeight: "600",
-
     color: "#38BDF8",
   },
 
@@ -2615,30 +2682,19 @@ const styles = {
 
   viewButton: {
     width: "100%",
-
     padding: "12px",
-
     background: ACCENT_GRADIENT,
-
     color: "#FFFFFF",
-
     border: "none",
-
     borderRadius: "6px",
-
     fontFamily: MONO,
-
     fontSize: "13px",
-
     fontWeight: "600",
-
     letterSpacing: "0.3px",
-
     cursor: "pointer",
-
     marginTop: "auto",
-
-    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
+    boxShadow:
+      "0 4px 15px rgba(6,182,212,0.25)",
   },
 
   // =====================================================
@@ -2646,39 +2702,32 @@ const styles = {
   // =====================================================
 
   emptyContainer: {
+    width: "100%",
     textAlign: "center",
-
-    padding: "50px 20px",
+    padding:
+      "50px 20px",
   },
 
   message: {
     textAlign: "center",
-
     color: "#94A3B8",
-
-    margin: "0 0 25px",
-
+    margin:
+      "0 0 25px",
     fontFamily: BODY,
   },
 
   addProductButton: {
     display: "inline-block",
-
     background: ACCENT_GRADIENT,
-
     color: "#FFFFFF",
-
-    padding: "14px 25px",
-
+    padding:
+      "14px 25px",
     borderRadius: "8px",
-
     textDecoration: "none",
-
     fontFamily: MONO,
-
     fontWeight: "600",
-
-    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
+    boxShadow:
+      "0 4px 15px rgba(6,182,212,0.25)",
   },
 
   // =====================================================
@@ -2686,28 +2735,23 @@ const styles = {
   // =====================================================
 
   features: {
-    padding: "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
-
+    width: "100%",
+    padding:
+      "clamp(50px, 8vw, 80px) clamp(20px, 5vw, 80px)",
     display: "grid",
-
-    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
-
+    gridTemplateColumns:
+      "repeat(auto-fit, minmax(min(100%, 220px), 1fr))",
     gap: "30px",
-
     textAlign: "center",
-
-    backgroundColor: "rgba(15, 23, 42, 0.75)",
-
+    backgroundColor:
+      "rgba(15,23,42,0.75)",
     backdropFilter: "blur(20px)",
-
-    WebkitBackdropFilter: "blur(20px)",
-
-    borderTop: "1px solid rgba(255,255,255,0.1)",
-
+    WebkitBackdropFilter:
+      "blur(20px)",
+    borderTop:
+      "1px solid rgba(255,255,255,0.1)",
     boxSizing: "border-box",
-
     position: "relative",
-
     zIndex: 1,
   },
 
@@ -2717,43 +2761,32 @@ const styles = {
 
   featureIcon: {
     fontSize: "30px",
-
     width: "62px",
-
     height: "62px",
-
     lineHeight: "62px",
-
-    margin: "0 auto 14px",
-
+    margin:
+      "0 auto 14px",
     borderRadius: "50%",
-
-    border: "1px dashed #38BDF8",
-
-    backgroundColor: "rgba(255,255,255,0.05)",
+    border:
+      "1px dashed #38BDF8",
+    backgroundColor:
+      "rgba(255,255,255,0.05)",
   },
 
   featureTitle: {
     fontFamily: DISPLAY,
-
     textTransform: "uppercase",
-
     fontWeight: "600",
-
     letterSpacing: "0.3px",
-
-    margin: "0 0 8px",
-
+    margin:
+      "0 0 8px",
     color: "#F8FAFC",
   },
 
   featureText: {
     color: "#94A3B8",
-
     fontSize: "14px",
-
     lineHeight: "1.6",
-
     margin: 0,
   },
 
@@ -2762,76 +2795,58 @@ const styles = {
   // =====================================================
 
   reviews: {
-    padding: "clamp(50px, 8vw, 80px) clamp(20px, 8vw, 100px)",
-
+    width: "100%",
+    padding:
+      "clamp(50px, 8vw, 80px) clamp(20px, 5vw, 80px)",
     backgroundColor: "#080C14",
-
     textAlign: "center",
-
     boxSizing: "border-box",
-
     position: "relative",
-
     zIndex: 1,
   },
 
   reviewGrid: {
     display: "grid",
-
-    gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 250px), 350px))",
-
+    gridTemplateColumns:
+      "repeat(auto-fit, minmax(min(100%, 250px), 350px))",
     gap: "25px",
-
     justifyContent: "center",
-
     width: "100%",
-
     marginTop: "10px",
   },
 
   reviewCard: {
     width: "100%",
-
-    backgroundColor: "rgba(15, 23, 42, 0.75)",
-
+    backgroundColor:
+      "rgba(15,23,42,0.75)",
     backdropFilter: "blur(20px)",
-
-    WebkitBackdropFilter: "blur(20px)",
-
+    WebkitBackdropFilter:
+      "blur(20px)",
     padding: "30px",
-
     borderRadius: "12px",
-
-    border: "1px solid rgba(255,255,255,0.1)",
-
+    border:
+      "1px solid rgba(255,255,255,0.1)",
     lineHeight: "1.7",
-
     boxSizing: "border-box",
-
     textAlign: "left",
   },
 
   stars: {
     color: "#38BDF8",
-
     fontSize: "18px",
-
     marginBottom: "10px",
   },
 
   reviewText: {
     fontSize: "15px",
-
     color: "#F8FAFC",
-
-    margin: "0 0 14px",
+    margin:
+      "0 0 14px",
   },
 
   reviewAuthor: {
     fontFamily: MONO,
-
     fontSize: "13px",
-
     color: "#94A3B8",
   },
 
@@ -2840,63 +2855,48 @@ const styles = {
   // =====================================================
 
   cta: {
+    width: "100%",
     backgroundColor: "#0B1120",
-
     color: "#F8FAFC",
-
     textAlign: "center",
-
-    padding: "clamp(50px, 8vw, 80px) 20px",
-
+    padding:
+      "clamp(50px, 8vw, 80px) 20px",
     boxSizing: "border-box",
-
     position: "relative",
-
     zIndex: 1,
   },
 
   ctaTitle: {
     fontFamily: DISPLAY,
-
     textTransform: "uppercase",
-
-    fontSize: "clamp(28px, 5vw, 45px)",
-
-    margin: "0 0 20px",
-
+    fontSize:
+      "clamp(26px, 5vw, 45px)",
+    margin:
+      "0 0 20px",
     fontWeight: "600",
   },
 
   ctaText: {
     color: "#94A3B8",
-
-    fontSize: "clamp(15px, 2vw, 18px)",
-
+    fontSize:
+      "clamp(14px, 2vw, 18px)",
     marginBottom: "30px",
-
     lineHeight: "1.6",
   },
 
   ctaButton: {
     display: "inline-block",
-
     background: ACCENT_GRADIENT,
-
     color: "#FFFFFF",
-
-    padding: "15px 35px",
-
+    padding:
+      "15px 35px",
     borderRadius: "8px",
-
     textDecoration: "none",
-
     fontFamily: MONO,
-
     fontWeight: "600",
-
     fontSize: "14px",
-
-    boxShadow: "0 4px 15px rgba(6, 182, 212, 0.25)",
+    boxShadow:
+      "0 4px 15px rgba(6,182,212,0.25)",
   },
 
   // =====================================================
@@ -2904,24 +2904,18 @@ const styles = {
   // =====================================================
 
   footer: {
+    width: "100%",
     backgroundColor: "#080C14",
-
     color: "#64748B",
-
     textAlign: "center",
-
-    padding: "25px 20px",
-
+    padding:
+      "25px 20px",
     fontFamily: MONO,
-
     fontSize: "13px",
-
     boxSizing: "border-box",
-
-    borderTop: "1px solid rgba(255,255,255,0.1)",
-
+    borderTop:
+      "1px solid rgba(255,255,255,0.1)",
     position: "relative",
-
     zIndex: 1,
   },
 };
