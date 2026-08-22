@@ -639,11 +639,11 @@ function AllProducts() {
                 {/* PRODUCT IMAGE */}
                 <div className="image-container">
                   <img
-                    src={`https://market-backend-2-xcn9.onrender.com/uploads/${product.productImg}`}
+                    src={product.productImg}
                     alt={product.name}
                     className="product-image"
                     onError={(e) => {
-                      e.target.src =
+                      e.currentTarget.src =
                         "https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&w=500&q=80";
                     }}
                   />
