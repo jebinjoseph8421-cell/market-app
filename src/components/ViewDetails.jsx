@@ -13,13 +13,13 @@ function ViewDetails() {
   const [addingToCart, setAddingToCart] = useState(false);
 
   // ==========================================
-  // GET LOGGED-IN USER (UNCHANGED)
+  // GET LOGGED-IN USER
   // ==========================================
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.userId;
 
   // ==========================================
-  // GET PRODUCT + RELATED PRODUCTS (UNCHANGED)
+  // GET PRODUCT + RELATED PRODUCTS
   // ==========================================
   const getProduct = async () => {
     try {
@@ -31,6 +31,10 @@ function ViewDetails() {
       );
 
       const currentProduct = response.data;
+
+      console.log("Current product:", currentProduct);
+      console.log("Cloudinary image:", currentProduct.productImg);
+
       setProduct(currentProduct);
 
       // Get all products
@@ -38,7 +42,7 @@ function ViewDetails() {
         "https://market-backend-2-xcn9.onrender.com/api/products/all",
       );
 
-      // Filter same category, exclude current product
+      // Filter same category and exclude current product
       const related = allProductsResponse.data.filter(
         (item) =>
           item.category === currentProduct.category &&
@@ -59,7 +63,7 @@ function ViewDetails() {
   }, [id]);
 
   // ==========================================
-  // ADD TO CART (UNCHANGED LOGIC & ENDPOINT)
+  // ADD TO CART
   // ==========================================
   const handleAddToCart = async () => {
     if (!userId) {
@@ -97,7 +101,7 @@ function ViewDetails() {
   };
 
   // ==========================================
-  // DELETE PRODUCT (UNCHANGED)
+  // DELETE PRODUCT
   // ==========================================
   const deleteProduct = async () => {
     const confirmDelete = window.confirm(
@@ -112,14 +116,23 @@ function ViewDetails() {
       await axios.delete(
         `https://market-backend-2-xcn9.onrender.com/api/products/${id}`,
       );
+
       alert("Product deleted successfully!");
       navigate("/all");
     } catch (error) {
       console.error("Error deleting product:", error);
+
+      if (error.response) {
+        console.error("Backend error:", error.response.data);
+      }
+
       alert("Failed to delete product");
     }
   };
 
+  // ==========================================
+  // FONT LINK
+  // ==========================================
   const FontLink = () => (
     <link
       rel="stylesheet"
@@ -127,7 +140,9 @@ function ViewDetails() {
     />
   );
 
-  // TOP BAR BREADCRUMB
+  // ==========================================
+  // TOP BAR
+  // ==========================================
   const TopBar = () => (
     <div className="vd-top-bar" style={styles.topBar}>
       <div className="vd-top-bar-inner" style={styles.topBarInner}>
@@ -137,7 +152,9 @@ function ViewDetails() {
               <span className="vd-crumb-category" style={styles.crumbCategory}>
                 {product.category}
               </span>
+
               <span style={styles.crumbDivider}>/</span>
+
               <span className="vd-crumb-current" style={styles.crumbCurrent}>
                 {product.name.length > 40
                   ? product.name.slice(0, 40) + "..."
@@ -151,34 +168,45 @@ function ViewDetails() {
           ◆ CURATED GOODS
         </span>
       </div>
+
       <div style={styles.topBarRule} />
     </div>
   );
 
+  // ==========================================
   // LOADING STATE
+  // ==========================================
   if (loading) {
     return (
       <div style={styles.messageContainer}>
         <FontLink />
+
         <div className="ambient-orb-1" />
         <div className="ambient-orb-2" />
+
         <div style={styles.loadingBlock}>
           <div style={styles.spinner} />
+
           <h2 style={styles.message}>Loading product details...</h2>
         </div>
       </div>
     );
   }
 
+  // ==========================================
   // PRODUCT NOT FOUND
+  // ==========================================
   if (!product) {
     return (
       <div style={styles.messageContainer}>
         <FontLink />
+
         <div className="ambient-orb-1" />
         <div className="ambient-orb-2" />
+
         <div style={styles.notFoundBlock}>
           <h2 style={styles.message}>Product not found</h2>
+
           <button
             onClick={() => navigate("/all")}
             style={styles.backButton}
@@ -191,6 +219,9 @@ function ViewDetails() {
     );
   }
 
+  // ==========================================
+  // MAIN PAGE
+  // ==========================================
   return (
     <div className="vd-page" style={styles.page}>
       <FontLink />
@@ -206,7 +237,9 @@ function ViewDetails() {
       >
         <TopBar />
 
-        {/* MAIN PRODUCT CARD */}
+        {/* ==========================================
+            MAIN PRODUCT CARD
+            ========================================== */}
         <div className="vd-fade-in vd-product-card" style={styles.card}>
           {/* PRODUCT IMAGE */}
           <div
@@ -216,10 +249,15 @@ function ViewDetails() {
             <img
               src={product.productImg}
               alt={product.name}
-              className="product-image"
+              style={styles.image}
               onError={(e) => {
+                console.error(
+                  "Failed to load product image:",
+                  product.productImg,
+                );
+
                 e.currentTarget.src =
-                  "https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&w=500&q=80";
+                  "https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&w=600&q=80";
               }}
             />
           </div>
@@ -227,12 +265,15 @@ function ViewDetails() {
           {/* PRODUCT DETAILS */}
           <div className="vd-product-details" style={styles.details}>
             <p style={styles.eyebrow}>PRODUCT SPECIFICATION</p>
+
             <h1 className="vd-product-title" style={styles.title}>
               {product.name}
             </h1>
+
             <p className="vd-product-category" style={styles.category}>
               {product.category}
             </p>
+
             <p className="vd-product-price" style={styles.price}>
               ₹{product.price}
             </p>
@@ -263,15 +304,20 @@ function ViewDetails() {
         </div>
       </div>
 
-      {/* RELATED PRODUCTS */}
+      {/* ==========================================
+          RELATED PRODUCTS
+          ========================================== */}
       {relatedProducts.length > 0 && (
         <section className="vd-related-section" style={styles.relatedSection}>
           <div className="vd-related-header" style={styles.relatedHeader}>
             <p style={styles.relatedEyebrow}>YOU MAY ALSO LIKE</p>
+
             <h2 className="vd-related-title" style={styles.relatedTitle}>
               More {product.category} Products
             </h2>
+
             <div style={styles.relatedRule} />
+
             <p className="vd-related-subtitle" style={styles.relatedSubtitle}>
               Explore more products from the same category
             </p>
@@ -287,27 +333,36 @@ function ViewDetails() {
                   animationDelay: `${index * 60}ms`,
                 }}
               >
+                {/* RELATED PRODUCT IMAGE */}
                 <div
                   className="vd-related-image-container"
                   style={styles.relatedImageContainer}
                 >
                   <img
                     className="vd-related-image"
-                    src={product.productImg}
-                    alt={product.name}
-                    className="product-image"
+                    src={relatedProduct.productImg}
+                    alt={relatedProduct.name}
+                    style={styles.relatedImage}
                     onError={(e) => {
+                      console.error(
+                        "Failed to load related image:",
+                        relatedProduct.productImg,
+                      );
+
                       e.currentTarget.src =
                         "https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&w=500&q=80";
                     }}
                   />
                 </div>
 
+                {/* RELATED PRODUCT DETAILS */}
                 <div className="vd-related-info" style={styles.relatedInfo}>
                   <p style={styles.relatedCategory}>
                     {relatedProduct.category}
                   </p>
+
                   <h3 style={styles.relatedName}>{relatedProduct.name}</h3>
+
                   <p style={styles.relatedPrice}>₹{relatedProduct.price}</p>
 
                   <button
@@ -324,6 +379,9 @@ function ViewDetails() {
         </section>
       )}
 
+      {/* ==========================================
+          CSS
+          ========================================== */}
       <style>{`
         * {
           box-sizing: border-box;
@@ -336,7 +394,11 @@ function ViewDetails() {
           width: 650px;
           height: 650px;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(99, 102, 241, 0.16) 0%, transparent 70%);
+          background: radial-gradient(
+            circle,
+            rgba(99, 102, 241, 0.16) 0%,
+            transparent 70%
+          );
           filter: blur(80px);
           animation: floatOrb 20s ease-in-out infinite alternate;
           pointer-events: none;
@@ -349,19 +411,29 @@ function ViewDetails() {
           width: 700px;
           height: 700px;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
+          background: radial-gradient(
+            circle,
+            rgba(6, 182, 212, 0.15) 0%,
+            transparent 70%
+          );
           filter: blur(90px);
           animation: floatOrb 24s ease-in-out infinite alternate-reverse;
           pointer-events: none;
         }
 
         @keyframes floatOrb {
-          0% { transform: translate(0, 0) scale(1); }
-          100% { transform: translate(50px, -50px) scale(1.1); }
+          0% {
+            transform: translate(0, 0) scale(1);
+          }
+
+          100% {
+            transform: translate(50px, -50px) scale(1.1);
+          }
         }
 
         .vd-fade-in {
-          animation: vd-rise 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+          animation: vd-rise 0.65s
+            cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
         @keyframes vd-rise {
@@ -369,6 +441,7 @@ function ViewDetails() {
             opacity: 0;
             transform: translateY(24px);
           }
+
           to {
             opacity: 1;
             transform: translateY(0);
@@ -378,15 +451,23 @@ function ViewDetails() {
         .btn-shine {
           position: relative;
           overflow: hidden;
-          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: all 0.35s
+            cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .btn-shine::after {
           content: "";
           position: absolute;
-          top: 0; left: -60%;
-          width: 40%; height: 100%;
-          background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+          top: 0;
+          left: -60%;
+          width: 40%;
+          height: 100%;
+          background: linear-gradient(
+            120deg,
+            transparent,
+            rgba(255, 255, 255, 0.4),
+            transparent
+          );
           transform: skewX(-20deg);
           transition: left 0.6s ease;
         }
@@ -397,13 +478,15 @@ function ViewDetails() {
 
         .btn-shine:hover:not(:disabled) {
           transform: translateY(-2px);
-          box-shadow: 0 10px 24px rgba(6, 182, 212, 0.35);
+          box-shadow: 0 10px 24px
+            rgba(6, 182, 212, 0.35);
           filter: brightness(1.1);
         }
 
         .vd-back-btn {
           transition: all 0.25s ease;
         }
+
         .vd-back-btn:hover {
           border-color: #38BDF8 !important;
           color: #38BDF8 !important;
@@ -412,14 +495,17 @@ function ViewDetails() {
 
         .vd-related-card {
           opacity: 0;
-          animation: vd-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          animation: vd-rise 0.55s
+            cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          transition: all 0.35s
+            cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .vd-related-card:hover {
           transform: translateY(-6px);
           border-color: #38BDF8 !important;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
+          box-shadow: 0 20px 40px
+            rgba(0, 0, 0, 0.5) !important;
         }
 
         .vd-related-image {
@@ -431,29 +517,69 @@ function ViewDetails() {
         }
 
         @keyframes vd-spin {
-          to { transform: rotate(360deg); }
+          to {
+            transform: rotate(360deg);
+          }
         }
 
         @media (max-width: 900px) {
           .vd-product-card {
             flex-direction: column !important;
           }
+
           .vd-product-image-container {
             width: 100% !important;
             height: 380px !important;
           }
+
           .vd-product-details {
             width: 100% !important;
             padding: 30px !important;
           }
+
           .related-products-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            grid-template-columns:
+              repeat(2, minmax(0, 1fr)) !important;
           }
         }
 
         @media (max-width: 600px) {
+          .vd-page {
+            padding: 20px 12px 50px !important;
+          }
+
+          .vd-top-bar-inner {
+            padding: 14px 18px !important;
+          }
+
+          .vd-top-bar-mark {
+            display: none;
+          }
+
+          .vd-product-image-container {
+            height: 320px !important;
+            min-height: 320px !important;
+            padding: 15px !important;
+          }
+
+          .vd-product-details {
+            padding: 25px 20px !important;
+          }
+
+          .vd-product-title {
+            font-size: 28px !important;
+          }
+
+          .vd-product-price {
+            font-size: 26px !important;
+          }
+
           .related-products-grid {
             grid-template-columns: 1fr !important;
+          }
+
+          .vd-related-title {
+            font-size: 25px !important;
           }
         }
       `}</style>
@@ -461,9 +587,17 @@ function ViewDetails() {
   );
 }
 
+// ==========================================
+// FONTS
+// ==========================================
+
 const DISPLAY = "'Space Grotesk', sans-serif";
 const BODY = "'Plus Jakarta Sans', sans-serif";
 const MONO = "'JetBrains Mono', monospace";
+
+// ==========================================
+// STYLES
+// ==========================================
 
 const styles = {
   page: {
