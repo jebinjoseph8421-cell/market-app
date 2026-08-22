@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 // =====================================================
 // REVEAL
 // =====================================================
+
 function Reveal({
   children,
   style,
@@ -50,6 +51,10 @@ function Reveal({
     </Tag>
   );
 }
+
+// =====================================================
+// APP
+// =====================================================
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -178,7 +183,8 @@ function App() {
 
     handleScroll();
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () =>
+      window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // =====================================================
@@ -559,9 +565,7 @@ function App() {
 
                 {/* =====================================================
                     PRODUCT GRID
-                    IMPORTANT:
-                    className="product-grid"
-                    ===================================================== */}
+                ===================================================== */}
 
                 <div
                   style={styles.productGrid}
@@ -835,7 +839,21 @@ const globalAnimations = `
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
 @keyframes heroFadeIn {
+
   from {
     opacity: 0;
     transform: translateY(10px);
@@ -845,6 +863,7 @@ const globalAnimations = `
     opacity: 1;
     transform: translateY(0);
   }
+
 }
 
 .hero-fade {
@@ -855,6 +874,7 @@ const globalAnimations = `
 }
 
 @keyframes glowPan {
+
   0% {
     background-position: 0% 50%;
   }
@@ -866,9 +886,11 @@ const globalAnimations = `
   100% {
     background-position: 0% 50%;
   }
+
 }
 
 .hero-glow {
+
   background-image:
     radial-gradient(
       circle at 20% 20%,
@@ -1289,6 +1311,7 @@ const globalAnimations = `
 }
 
 .feature {
+
   transition:
     transform
     0.3s
@@ -1296,6 +1319,7 @@ const globalAnimations = `
 }
 
 .feature:hover {
+
   transform:
     translateY(-6px);
 }
@@ -1427,8 +1451,8 @@ const globalAnimations = `
 
 
 /* =====================================================
-   IMPORTANT MOBILE PRODUCT GRID
-   EXACTLY 4 CARDS IN ONE ROW
+   MOBILE
+   EXACTLY 4 SMALL CARDS IN ONE ROW
    ===================================================== */
 
 @media (max-width: 600px) {
@@ -1438,22 +1462,33 @@ const globalAnimations = `
     display: grid !important;
 
     grid-template-columns:
-      repeat(4, minmax(0, 1fr)) !important;
+      repeat(
+        4,
+        minmax(
+          0,
+          calc((100vw - 55px) / 4)
+        )
+      ) !important;
 
-    gap: 6px !important;
+    gap: 8px !important;
 
     width: 100% !important;
 
     max-width: 100% !important;
 
-    margin: 0 !important;
+    margin: 0 auto !important;
 
     padding: 0 !important;
 
-    justify-content: stretch !important;
+    justify-content: center !important;
 
-    align-items: stretch !important;
+    align-items: start !important;
   }
+
+
+  /* =================================================
+     CARD
+     ================================================= */
 
   .mobile-product-card {
 
@@ -1463,21 +1498,44 @@ const globalAnimations = `
 
     max-width: 100% !important;
 
-    height: 275px !important;
+    height: 245px !important;
+
+    min-height: 245px !important;
 
     border-radius: 7px !important;
 
     overflow: hidden !important;
+
+    box-sizing: border-box !important;
   }
 
-  .mobile-product-card .imageContainer {
+
+  /* =================================================
+     IMAGE
+     ================================================= */
+
+  .mobile-product-card > div:first-child {
 
     width: 100% !important;
 
-    height: 100px !important;
+    height: 82px !important;
+
+    min-height: 82px !important;
 
     flex-shrink: 0 !important;
+
+    background-color:
+      rgb(250, 251, 255) !important;
+
+    overflow: hidden !important;
+
+    display: flex !important;
+
+    justify-content: center !important;
+
+    align-items: center !important;
   }
+
 
   .mobile-product-card .product-image {
 
@@ -1486,63 +1544,112 @@ const globalAnimations = `
     height: 100% !important;
 
     object-fit: contain !important;
+
+    display: block !important;
+
+    padding: 3px !important;
   }
+
+
+  /* =================================================
+     DASHED LINE
+     ================================================= */
+
+  .mobile-product-card > .dashedLine {
+
+    margin:
+      0 4px !important;
+
+    flex-shrink: 0 !important;
+  }
+
+
+  /* =================================================
+     DETAILS
+     ================================================= */
 
   .mobile-product-card .details {
 
-    padding:
-      7px 5px 6px !important;
+    width: 100% !important;
 
     min-width: 0 !important;
+
+    padding:
+      7px 5px 5px !important;
+
+    display: flex !important;
+
+    flex-direction: column !important;
+
+    flex: 1 !important;
+
+    box-sizing: border-box !important;
   }
 
-  .mobile-product-card .productName {
 
-    font-size: 10px !important;
+  /* =================================================
+     PRODUCT NAME
+     ================================================= */
 
-    line-height: 12px !important;
-
-    margin:
-      0 0 4px !important;
-
-    min-height: 24px !important;
-  }
+  .mobile-product-card .productName,
 
   .mobile-product-card h3 {
 
-    font-size: 10px !important;
+    width: 100% !important;
 
-    line-height: 12px !important;
+    min-width: 0 !important;
+
+    min-height: 24px !important;
+
+    max-height: 24px !important;
 
     margin:
       0 0 4px !important;
 
-    min-height: 24px !important;
+    font-size: 9px !important;
+
+    line-height: 12px !important;
+
+    font-weight: 600 !important;
 
     display:
       -webkit-box !important;
 
-    -webkit-line-clamp:
-      2 !important;
-
     -webkit-box-orient:
       vertical !important;
+
+    -webkit-line-clamp:
+      2 !important;
 
     overflow:
       hidden !important;
 
     word-break:
       break-word !important;
+
+    overflow-wrap:
+      anywhere !important;
   }
+
+
+  /* =================================================
+     CATEGORY
+     ================================================= */
 
   .mobile-product-card .category {
 
-    font-size: 7px !important;
+    width: 100% !important;
 
-    line-height: 9px !important;
+    min-width: 0 !important;
+
+    font-size: 6px !important;
+
+    line-height: 8px !important;
 
     margin:
       0 0 5px !important;
+
+    letter-spacing: 0 !important;
 
     white-space:
       nowrap !important;
@@ -1554,104 +1661,250 @@ const globalAnimations = `
       ellipsis !important;
   }
 
+
+  /* =================================================
+     PRICE
+     ================================================= */
+
   .mobile-product-card .price {
 
-    font-size: 12px !important;
+    font-size: 11px !important;
 
-    line-height: 14px !important;
+    line-height: 13px !important;
 
     margin:
       0 0 6px !important;
-  }
-
-  .mobile-product-card .view-btn {
-
-    width: 100% !important;
-
-    padding:
-      6px 1px !important;
-
-    font-size: 7px !important;
-
-    line-height: 10px !important;
-
-    border-radius: 4px !important;
 
     white-space:
       nowrap !important;
   }
 
-  .mobile-product-card .dashedLine {
 
-    margin:
-      0 5px !important;
+  /* =================================================
+     VIEW BUTTON
+     ================================================= */
+
+  .mobile-product-card .view-btn {
+
+    width: 100% !important;
+
+    min-width: 0 !important;
+
+    padding:
+      5px 1px !important;
+
+    margin-top:
+      auto !important;
+
+    font-size: 6px !important;
+
+    line-height: 9px !important;
+
+    border-radius: 3px !important;
+
+    white-space:
+      nowrap !important;
+
+    letter-spacing: 0 !important;
   }
+
+
+  /* =================================================
+     HOVER
+     ================================================= */
 
   .mobile-product-card:hover {
 
     transform:
       translateY(-3px) !important;
+
+    box-shadow:
+      0 10px 20px
+      rgba(0,0,0,0.4) !important;
   }
+
 
   .mobile-product-card:hover .product-image {
 
     transform:
       scale(1.04) !important;
   }
+
 }
 
 
 /* =====================================================
-   LARGER MOBILE PHONES
+   390PX AND ABOVE
    ===================================================== */
 
 @media (min-width: 390px) and (max-width: 600px) {
 
   .product-grid {
 
-    gap: 7px !important;
+    grid-template-columns:
+      repeat(
+        4,
+        minmax(
+          0,
+          calc((100vw - 60px) / 4)
+        )
+      ) !important;
+
+    gap: 9px !important;
   }
+
 
   .mobile-product-card {
 
-    height: 290px !important;
+    height: 260px !important;
+
+    min-height: 260px !important;
   }
 
-  .mobile-product-card .imageContainer {
 
-    height: 110px !important;
+  .mobile-product-card > div:first-child {
+
+    height: 90px !important;
+
+    min-height: 90px !important;
   }
+
+
+  .mobile-product-card .productName,
+
+  .mobile-product-card h3 {
+
+    font-size: 10px !important;
+
+    line-height: 12px !important;
+
+    min-height: 24px !important;
+
+    max-height: 24px !important;
+  }
+
+
+  .mobile-product-card .category {
+
+    font-size: 7px !important;
+
+    line-height: 9px !important;
+  }
+
+
+  .mobile-product-card .price {
+
+    font-size: 12px !important;
+
+    line-height: 14px !important;
+  }
+
+
+  .mobile-product-card .view-btn {
+
+    font-size: 7px !important;
+
+    line-height: 10px !important;
+
+    padding:
+      6px 1px !important;
+  }
+
+}
+
+
+/* =====================================================
+   VERY SMALL PHONES
+   ===================================================== */
+
+@media (max-width: 360px) {
+
+  .product-grid {
+
+    grid-template-columns:
+      repeat(
+        4,
+        minmax(
+          0,
+          calc((100vw - 45px) / 4)
+        )
+      ) !important;
+
+    gap: 6px !important;
+  }
+
+
+  .mobile-product-card {
+
+    height: 225px !important;
+
+    min-height: 225px !important;
+
+    border-radius: 6px !important;
+  }
+
+
+  .mobile-product-card > div:first-child {
+
+    height: 75px !important;
+
+    min-height: 75px !important;
+  }
+
 
   .mobile-product-card .details {
 
     padding:
-      8px 6px 7px !important;
+      5px 4px 4px !important;
   }
+
+
+  .mobile-product-card .productName,
 
   .mobile-product-card h3 {
 
-    font-size: 11px !important;
+    font-size: 8px !important;
 
-    line-height: 13px !important;
+    line-height: 10px !important;
+
+    min-height: 20px !important;
+
+    max-height: 20px !important;
+
+    margin-bottom: 3px !important;
   }
+
 
   .mobile-product-card .category {
 
-    font-size: 8px !important;
+    font-size: 5px !important;
+
+    line-height: 7px !important;
+
+    margin-bottom: 4px !important;
   }
+
 
   .mobile-product-card .price {
 
-    font-size: 13px !important;
+    font-size: 10px !important;
+
+    line-height: 12px !important;
+
+    margin-bottom: 4px !important;
   }
+
 
   .mobile-product-card .view-btn {
 
-    font-size: 8px !important;
+    font-size: 5px !important;
+
+    line-height: 8px !important;
 
     padding:
-      7px 2px !important;
+      4px 1px !important;
   }
+
 }
 
 
@@ -1684,6 +1937,7 @@ const globalAnimations = `
 
     transform: none;
   }
+
 }
 
 `;
@@ -1717,6 +1971,7 @@ const styles = {
     position: "relative",
   },
 
+
   // =====================================================
   // AMBIENT ORBS
   // =====================================================
@@ -1748,6 +2003,7 @@ const styles = {
     zIndex: 0,
   },
 
+
   ambientOrb2: {
 
     position: "fixed",
@@ -1775,6 +2031,7 @@ const styles = {
     zIndex: 0,
   },
 
+
   // =====================================================
   // PROGRESS
   // =====================================================
@@ -1796,6 +2053,7 @@ const styles = {
     zIndex: 999,
   },
 
+
   progressFill: {
 
     height: "100%",
@@ -1809,6 +2067,7 @@ const styles = {
     boxShadow:
       "0 0 8px rgba(56,189,248,0.7)",
   },
+
 
   // =====================================================
   // HERO
@@ -1845,6 +2104,7 @@ const styles = {
     zIndex: 1,
   },
 
+
   heroContent: {
 
     flex:
@@ -1858,6 +2118,7 @@ const styles = {
 
     zIndex: 1,
   },
+
 
   welcome: {
 
@@ -1873,6 +2134,7 @@ const styles = {
 
     marginBottom: "22px",
   },
+
 
   heroTitle: {
 
@@ -1901,6 +2163,7 @@ const styles = {
     backgroundClip: "text",
   },
 
+
   heroText: {
 
     fontSize:
@@ -1915,6 +2178,7 @@ const styles = {
     maxWidth: "460px",
   },
 
+
   heroButtons: {
 
     display: "flex",
@@ -1923,6 +2187,7 @@ const styles = {
 
     flexWrap: "wrap",
   },
+
 
   shopButton: {
 
@@ -1953,6 +2218,7 @@ const styles = {
       "0 4px 15px rgba(6, 182, 212, 0.25)",
   },
 
+
   addButton: {
 
     display: "inline-block",
@@ -1979,6 +2245,7 @@ const styles = {
     textAlign: "center",
   },
 
+
   heroImageWrap: {
 
     position: "relative",
@@ -1992,6 +2259,7 @@ const styles = {
 
     zIndex: 1,
   },
+
 
   heroFrame: {
 
@@ -2020,6 +2288,7 @@ const styles = {
       "1px solid rgba(255,255,255,0.1)",
   },
 
+
   heroSlideImg: {
 
     position: "absolute",
@@ -2038,6 +2307,7 @@ const styles = {
       "opacity 1s ease, transform 1.2s ease",
   },
 
+
   heroSheen: {
 
     position: "absolute",
@@ -2052,6 +2322,7 @@ const styles = {
     width: "40%",
   },
 
+
   heroDots: {
 
     display: "flex",
@@ -2062,6 +2333,7 @@ const styles = {
 
     marginTop: "16px",
   },
+
 
   heroDot: {
 
@@ -2084,6 +2356,7 @@ const styles = {
       "width 0.25s ease, background-color 0.25s ease",
   },
 
+
   heroDotActive: {
 
     width: "22px",
@@ -2092,6 +2365,7 @@ const styles = {
 
     backgroundColor: "#38BDF8",
   },
+
 
   heroStamp: {
 
@@ -2128,6 +2402,7 @@ const styles = {
     backdropFilter: "blur(10px)",
   },
 
+
   heroStampText: {
 
     fontFamily: MONO,
@@ -2144,6 +2419,7 @@ const styles = {
 
     padding: "0 8px",
   },
+
 
   // =====================================================
   // OFFER
@@ -2177,6 +2453,7 @@ const styles = {
     zIndex: 1,
   },
 
+
   offerLabel: {
 
     fontFamily: MONO,
@@ -2189,6 +2466,7 @@ const styles = {
 
     color: "#34D399",
   },
+
 
   offerTitle: {
 
@@ -2206,6 +2484,7 @@ const styles = {
     color: "#F8FAFC",
   },
 
+
   offerText: {
 
     color: "#94A3B8",
@@ -2217,6 +2496,7 @@ const styles = {
 
     lineHeight: "1.6",
   },
+
 
   offerButton: {
 
@@ -2243,6 +2523,7 @@ const styles = {
       "0 4px 15px rgba(6, 182, 212, 0.25)",
   },
 
+
   // =====================================================
   // CATEGORY SECTION
   // =====================================================
@@ -2261,6 +2542,7 @@ const styles = {
     zIndex: 1,
   },
 
+
   sectionHeader: {
 
     textAlign: "center",
@@ -2268,6 +2550,7 @@ const styles = {
     marginBottom:
       "clamp(30px, 5vw, 45px)",
   },
+
 
   sectionLabel: {
 
@@ -2281,6 +2564,7 @@ const styles = {
 
     color: "#38BDF8",
   },
+
 
   sectionTitle: {
 
@@ -2298,6 +2582,7 @@ const styles = {
     color: "#F8FAFC",
   },
 
+
   sectionSubtitle: {
 
     color: "#94A3B8",
@@ -2307,6 +2592,7 @@ const styles = {
 
     lineHeight: "1.6",
   },
+
 
   // =====================================================
   // CATEGORY TABS
@@ -2327,6 +2613,7 @@ const styles = {
     margin:
       "0 auto clamp(35px, 5vw, 55px)",
   },
+
 
   tabDark: {
 
@@ -2360,6 +2647,7 @@ const styles = {
     borderBottom: "none",
   },
 
+
   tabAccent: {
 
     fontFamily: MONO,
@@ -2387,6 +2675,7 @@ const styles = {
     color: "#FFFFFF",
   },
 
+
   // =====================================================
   // CATEGORY
   // =====================================================
@@ -2401,6 +2690,7 @@ const styles = {
 
     scrollMarginTop: "20px",
   },
+
 
   categoryHeader: {
 
@@ -2422,6 +2712,7 @@ const styles = {
     flexWrap: "wrap",
   },
 
+
   categoryLabel: {
 
     fontFamily: MONO,
@@ -2436,6 +2727,7 @@ const styles = {
 
     fontWeight: "600",
   },
+
 
   categoryTitle: {
 
@@ -2453,6 +2745,7 @@ const styles = {
     color: "#F8FAFC",
   },
 
+
   viewAll: {
 
     fontFamily: MONO,
@@ -2469,6 +2762,7 @@ const styles = {
 
     display: "inline-block",
   },
+
 
   // =====================================================
   // PRODUCT GRID
@@ -2490,7 +2784,10 @@ const styles = {
     justifyContent: "start",
 
     alignItems: "start",
+
+    width: "100%",
   },
+
 
   // =====================================================
   // PRODUCT CARD
@@ -2528,6 +2825,7 @@ const styles = {
     boxSizing: "border-box",
   },
 
+
   // =====================================================
   // IMAGE
   // =====================================================
@@ -2555,6 +2853,7 @@ const styles = {
       "12px 12px 0 0",
   },
 
+
   image: {
 
     width: "100%",
@@ -2566,6 +2865,7 @@ const styles = {
     display: "block",
   },
 
+
   dashedLine: {
 
     borderTop:
@@ -2573,6 +2873,7 @@ const styles = {
 
     margin: "0 16px",
   },
+
 
   // =====================================================
   // DETAILS
@@ -2591,6 +2892,7 @@ const styles = {
 
     minWidth: 0,
   },
+
 
   productName: {
 
@@ -2620,6 +2922,7 @@ const styles = {
       "vertical",
   },
 
+
   category: {
 
     fontFamily: MONO,
@@ -2642,6 +2945,7 @@ const styles = {
     whiteSpace: "nowrap",
   },
 
+
   price: {
 
     fontFamily: MONO,
@@ -2655,6 +2959,7 @@ const styles = {
 
     color: "#38BDF8",
   },
+
 
   // =====================================================
   // BUTTON
@@ -2691,6 +2996,7 @@ const styles = {
       "0 4px 15px rgba(6, 182, 212, 0.25)",
   },
 
+
   // =====================================================
   // EMPTY
   // =====================================================
@@ -2701,6 +3007,7 @@ const styles = {
 
     padding: "50px 20px",
   },
+
 
   message: {
 
@@ -2713,6 +3020,7 @@ const styles = {
 
     fontFamily: BODY,
   },
+
 
   addProductButton: {
 
@@ -2736,6 +3044,7 @@ const styles = {
     boxShadow:
       "0 4px 15px rgba(6, 182, 212, 0.25)",
   },
+
 
   // =====================================================
   // FEATURES
@@ -2774,10 +3083,12 @@ const styles = {
     zIndex: 1,
   },
 
+
   feature: {
 
     width: "100%",
   },
+
 
   featureIcon: {
 
@@ -2801,6 +3112,7 @@ const styles = {
       "rgba(255,255,255,0.05)",
   },
 
+
   featureTitle: {
 
     fontFamily: DISPLAY,
@@ -2817,6 +3129,7 @@ const styles = {
     color: "#F8FAFC",
   },
 
+
   featureText: {
 
     color: "#94A3B8",
@@ -2827,6 +3140,7 @@ const styles = {
 
     margin: 0,
   },
+
 
   // =====================================================
   // REVIEWS
@@ -2848,6 +3162,7 @@ const styles = {
     zIndex: 1,
   },
 
+
   reviewGrid: {
 
     display: "grid",
@@ -2863,6 +3178,7 @@ const styles = {
 
     marginTop: "10px",
   },
+
 
   reviewCard: {
 
@@ -2891,6 +3207,7 @@ const styles = {
     textAlign: "left",
   },
 
+
   stars: {
 
     color: "#38BDF8",
@@ -2899,6 +3216,7 @@ const styles = {
 
     marginBottom: "10px",
   },
+
 
   reviewText: {
 
@@ -2910,6 +3228,7 @@ const styles = {
       "0 0 14px",
   },
 
+
   reviewAuthor: {
 
     fontFamily: MONO,
@@ -2918,6 +3237,7 @@ const styles = {
 
     color: "#94A3B8",
   },
+
 
   // =====================================================
   // CTA
@@ -2941,6 +3261,7 @@ const styles = {
     zIndex: 1,
   },
 
+
   ctaTitle: {
 
     fontFamily: DISPLAY,
@@ -2956,6 +3277,7 @@ const styles = {
     fontWeight: "600",
   },
 
+
   ctaText: {
 
     color: "#94A3B8",
@@ -2967,6 +3289,7 @@ const styles = {
 
     lineHeight: "1.6",
   },
+
 
   ctaButton: {
 
@@ -2992,6 +3315,7 @@ const styles = {
     boxShadow:
       "0 4px 15px rgba(6, 182, 212, 0.25)",
   },
+
 
   // =====================================================
   // FOOTER
