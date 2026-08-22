@@ -2433,7 +2433,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     width: "100%",
-    height: "300px",
+    height: "400px",
     minWidth: 0,
     boxSizing: "border-box",
   },
