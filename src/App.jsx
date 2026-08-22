@@ -1443,9 +1443,9 @@ body {
 
     max-width: 100% !important;
 
-    height: 250px !important;
+    height: 225px !important;
 
-    min-height: 250px !important;
+    min-height: 225px !important;
 
     border-radius: 7px !important;
 
