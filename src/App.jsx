@@ -1612,30 +1612,17 @@ body {
 
   /* BUTTON */
 
-  .mobile-product-card
-  .view-btn {
-
-    width: 100% !important;
-
-    min-width: 0 !important;
-
-    padding:
-      5px 1px !important;
-
-    margin-top:
-      auto !important;
-
-    font-size: 6px !important;
-
-    line-height: 9px !important;
-
-    border-radius: 3px !important;
-
-    white-space:
-      nowrap !important;
-
-    letter-spacing: 0 !important;
-  }
+.mobile-product-card .view-btn {
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: 5px 1px !important;
+  margin-top: 2px !important;
+  font-size: 6px !important;
+  line-height: 9px !important;
+  border-radius: 3px !important;
+  white-space: nowrap !important;
+  letter-spacing: 0 !important;
+}
 
   /* CATEGORY HEADER */
 
