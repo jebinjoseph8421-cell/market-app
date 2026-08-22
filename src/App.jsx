@@ -412,13 +412,12 @@ function App() {
 
                       <div style={styles.imageContainer}>
                         <img
-                          src={`https://market-backend-2-xcn9.onrender.com/uploads/${product.productImg}`}
+                          src={product.productImg}
                           alt={product.name}
-                          style={styles.image}
                           className="product-image"
                           onError={(e) => {
-                            e.target.src =
-                              "https://via.placeholder.com/400x300?text=No+Image";
+                            e.currentTarget.src =
+                              "https://images.unsplash.com/photo-1560343090-f0409e92791a?auto=format&fit=crop&w=500&q=80";
                           }}
                         />
                       </div>
