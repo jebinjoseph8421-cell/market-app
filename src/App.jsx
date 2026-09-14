@@ -1646,12 +1646,10 @@ body {
     gap: 9px !important;
   }
 
-  .mobile-product-card {
-
-    height: 260px !important;
-
-    min-height: 260px !important;
-  }
+.mobile-product-card {
+  height: 245px !important;
+  min-height: 245px !important;
+}
 
   .mobile-product-card
   .product-image-container {
