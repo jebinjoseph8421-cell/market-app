@@ -1021,6 +1021,8 @@ function GlobalStyle() {
 
           line-height: 1.2;
 
+          min-height: 2.4em;
+
           margin:
             0 0 5px;
 
