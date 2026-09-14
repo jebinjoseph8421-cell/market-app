@@ -1646,11 +1646,6 @@ body {
     gap: 9px !important;
   }
 
-.mobile-product-card {
-  height: 245px !important;
-  min-height: 245px !important;
-}
-
   .mobile-product-card
   .product-image-container {
 
@@ -1720,10 +1715,6 @@ body {
   }
 
   .mobile-product-card {
-
-    height: 235px !important;
-
-    min-height: 235px !important;
 
     border-radius: 6px !important;
   }
@@ -1811,13 +1802,6 @@ body {
       ) !important;
 
     gap: 5px !important;
-  }
-
-  .mobile-product-card {
-
-    height: 220px !important;
-
-    min-height: 220px !important;
   }
 
   .mobile-product-card
