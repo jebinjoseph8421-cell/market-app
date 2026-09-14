@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
@@ -28,6 +28,30 @@ function SignIn() {
   // PASSWORD VISIBILITY
   // ==========================================
   const [showPassword, setShowPassword] = useState(false);
+
+  // ==========================================
+  // GOOGLE BUTTON RESPONSIVE WIDTH
+  // ==========================================
+  const googleWrapperRef = useRef(null);
+  const [googleButtonWidth, setGoogleButtonWidth] = useState(360);
+
+  useEffect(() => {
+    const updateGoogleButtonWidth = () => {
+      if (googleWrapperRef.current) {
+        const wrapperWidth = googleWrapperRef.current.offsetWidth;
+
+        // Google's button has a minimum usable width, cap between
+        // a sane minimum and the original 360 desktop size.
+        setGoogleButtonWidth(Math.max(220, Math.min(wrapperWidth, 360)));
+      }
+    };
+
+    updateGoogleButtonWidth();
+
+    window.addEventListener("resize", updateGoogleButtonWidth);
+
+    return () => window.removeEventListener("resize", updateGoogleButtonWidth);
+  }, []);
 
   // ==========================================
   // HANDLE INPUT CHANGES
@@ -1097,15 +1121,16 @@ function SignIn() {
             <div className="google-login-section stagger stagger-7">
               <div className="google-divider">OR CONTINUE WITH</div>
 
-              <div className="google-button-wrapper">
+              <div className="google-button-wrapper" ref={googleWrapperRef}>
                 <GoogleLogin
+                  key={googleButtonWidth}
                   onSuccess={handleGoogleLogin}
                   onError={handleGoogleError}
                   theme="outline"
                   size="large"
                   text="continue_with"
                   shape="rectangular"
-                  width="360"
+                  width={googleButtonWidth}
                 />
               </div>
             </div>
