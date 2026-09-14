@@ -1035,6 +1035,11 @@ body {
 ===================================================== */
 
 .product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+
   transition:
     transform
     0.6s
