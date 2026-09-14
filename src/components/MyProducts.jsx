@@ -964,14 +964,17 @@ function GlobalStyle() {
           gap: 6px;
 
           justify-content: stretch;
+
+          align-items: start;
         }
 
-        /* COMPACT MOBILE CARD */
+        /* COMPACT MOBILE CARD — height follows its own content */
 
         .mp-card {
           width: 100%;
           min-width: 0;
-          min-height: 230px;
+          height: auto;
+          min-height: 0;
 
           border-radius: 7px;
         }
@@ -994,6 +997,8 @@ function GlobalStyle() {
         .mp-info {
           padding:
             8px 6px 7px;
+
+          flex: none;
         }
 
         .mp-category {
@@ -1032,6 +1037,8 @@ function GlobalStyle() {
         /* MOBILE DELETE */
 
         .mp-delete-button {
+          margin-top: 2px;
+
           padding:
             6px 3px;
 
@@ -1114,7 +1121,6 @@ function GlobalStyle() {
         }
 
         .mp-card {
-          min-height: 205px;
           border-radius: 5px;
         }
 
